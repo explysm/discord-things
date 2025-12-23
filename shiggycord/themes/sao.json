@@ -1,0 +1,90 @@
+{
+    "name": "Sword Art Online: Aincrad",
+    "description": "A high-tech UI theme inspired by the SAO menu system, featuring steel greys and digital cyan accents.",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Gemini",
+            "id": "000000000000000000"
+        }
+    ],
+    "semanticColors": {
+        "HEADER_PRIMARY": ["#ffffff"],
+        "HEADER_SECONDARY": ["#00e5ff"],
+        "TEXT_NORMAL": ["#e0e0e0"],
+        "TEXT_MUTED": ["#8e9297"],
+        "INTERACTIVE_NORMAL": ["#00e5ff"],
+        "INTERACTIVE_HOVER": ["#7df9ff"],
+        "INTERACTIVE_ACTIVE": ["#ffffff"],
+        "INTERACTIVE_MUTED": ["#2e5a5e"],
+        "BACKGROUND_PRIMARY": ["#0b0e11"],
+        "CARD_PRIMARY_BG": ["#11151a"],
+        "BG_BASE_PRIMARY": ["#0b0e11"],
+        "BACKGROUND_SECONDARY": ["#15191f"],
+        "CARD_SECONDARY_BG": ["#15191f"],
+        "BG_BASE_SECONDARY": ["#15191f"],
+        "BACKGROUND_SECONDARY_ALT": ["#1c2229"],
+        "BACKGROUND_TERTIARY": ["#07090b"],
+        "BG_BASE_TERTIARY": ["#07090b"],
+        "BACKGROUND_ACCENT": ["#00e5ff"],
+        "BACKGROUND_MOBILE_PRIMARY": ["#0b0e11"],
+        "BACKGROUND_MOBILE_SECONDARY": ["#15191f"],
+        "BACKGROUND_MESSAGE_HOVER": ["rgba(0, 229, 255, 0.05)"],
+        "BACKGROUND_MODIFIER_HOVER": ["rgba(0, 229, 255, 0.08)"],
+        "BACKGROUND_MODIFIER_ACTIVE": ["rgba(0, 229, 255, 0.12)"],
+        "BACKGROUND_MODIFIER_SELECTED": ["rgba(0, 229, 255, 0.15)"],
+        "BACKGROUND_MODIFIER_ACCENT": ["#00e5ff"],
+        "BACKGROUND_MENTIONED": ["rgba(0, 229, 255, 0.1)"],
+        "BACKGROUND_MENTIONED_HOVER": ["rgba(0, 229, 255, 0.2)"],
+        "CHANNELTEXTAREA_BACKGROUND": ["#1a1d23"],
+        "REDESIGN_ACTIVITY_CARD_BACKGROUND": ["#15191f"],
+        "REDESIGN_BUTTON_SECONDARY_BACKGROUND": ["#2b2d31"],
+        "REDESIGN_CHAT_INPUT_BACKGROUND": ["#1a1d23"],
+        "REDESIGN_BUTTON_TERTIARY_BACKGROUND": ["#1c2229"],
+        "REDESIGN_BUTTON_SECONDARY_BORDER": ["#00e5ff"],
+        "REDESIGN_CHANNEL_CATEGORY_NAME_TEXT": ["#ffffff"],
+        "REDESIGN_CHANNEL_NAME_TEXT": ["#e0e0e0"],
+        "CHANNELS_DEFAULT": ["#8e9297"],
+        "CHANNEL_ICON": ["#00e5ff"],
+        "TEXT_PRIMARY": ["#ffffff"],
+        "TEXT_LINK": ["#00e5ff"],
+        "THREAD_CHANNEL_SPINE": ["#00e5ff"]
+    },
+    "rawColors": {
+        "PRIMARY_100": "#ffffff",
+        "PRIMARY_200": "#e0e0e0",
+        "PRIMARY_300": "#b9bbbe",
+        "PRIMARY_400": "#8e9297",
+        "PRIMARY_500": "#00e5ff",
+        "PRIMARY_600": "#00b8cc",
+        "PRIMARY_700": "#0b0e11",
+        "PRIMARY_800": "#07090b",
+        "BRAND_230": "#00e5ff",
+        "BRAND_260": "#00e5ff",
+        "BRAND_500": "#00e5ff",
+        "RED_260": "#ff4654",
+        "YELLOW_260": "#f6e05e",
+        "GREEN_260": "#43b581"
+    },
+    "plus": {
+        "version": "0",
+        "customOverlays": true,
+        "icons": {
+            "ic_radio_circle_checked": "#00e5ff",
+            "ic_radio_square_checked_24px": "#00e5ff",
+            "ic_selection_checked_24px": "#00e5ff",
+            "StatusOnline": "#3df2ff",
+            "StatusIdle": "#faa61a",
+            "StatusDND": "#f04747",
+            "StatusOffline": "#747f8d",
+            "StatusStreaming": "#593695"
+        }
+    },
+    "background": {
+        "blur": 0.0,
+        "url": "https://images.wallpapersden.com/image/download/sword-art-online-aincrad-castle_a2htZ2mUmZqaraWkpJRmbmdlrWZlbWU.jpg",
+        "alpha": 0.35
+    },
+    "spec": 2
+}
+
