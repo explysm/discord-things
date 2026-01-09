@@ -1,0 +1,25 @@
+{
+  "spec": 1,
+  "name": "Hylia-Serif",
+  "previewText": "Hylia Serif",
+  "main": {
+    "ABCGintoNord-ExtraBold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "ggsans-Bold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "ggsans-BoldItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "ggsans-ExtraBold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "ggsans-ExtraBoldItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "ggsans-Medium": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "ggsans-MediumItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "ggsans-Normal": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "ggsans-NormalItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "ggsans-Semibold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "ggsans-SemiboldItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "NotoSans-Bold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "NotoSans-ExtraBold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "NotoSans-Medium": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "NotoSans-Normal": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "NotoSans-NormalItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "NotoSans-Semibold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf",
+    "SourceCodePro-Semibold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/HyliaSerif.ttf"
+  }
+}
