@@ -1,0 +1,25 @@
+{
+  "spec": 1,
+  "name": "AXE BODY SPRAY",
+  "previewText": "AXE BODY SPRAY",
+  "main": {
+    "ABCGintoNord-ExtraBold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "ggsans-Bold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "ggsans-BoldItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "ggsans-ExtraBold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "ggsans-ExtraBoldItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "ggsans-Medium": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "ggsans-MediumItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "ggsans-Normal": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "ggsans-NormalItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "ggsans-Semibold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "ggsans-SemiboldItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "NotoSans-Bold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "NotoSans-ExtraBold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "NotoSans-Medium": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "NotoSans-Normal": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "NotoSans-NormalItalic": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "NotoSans-Semibold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf",
+    "SourceCodePro-Semibold": "https://raw.githubusercontent.com/explysm/discord-things/main/fonts/ttf/Trivial-Regular.ttf"
+  }
+}
