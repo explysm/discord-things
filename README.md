@@ -7,3 +7,9 @@ Just some discord stuff
 ```
 https://raw.githubusercontent.com/explysm/discord-things/main/fonts/papyrus.json
 ```
+
+
+### Comic Sans
+```
+https://raw.githubusercontent.com/explysm/discord-things/main/fonts/comic-sans.json
+```
