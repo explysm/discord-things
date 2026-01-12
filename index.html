@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Things</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .portal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+        }
+        
+        .portal-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-color);
+            box-shadow: var(--shadow-lg);
+            background: var(--card-hover-bg);
+        }
+        
+        .portal-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-text);
+            transition: color 0.3s;
+        }
+        
+        .portal-card:hover .portal-icon {
+            color: var(--accent-color);
+        }
+        
+        .portal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .portal-cardDesc {
+            color: var(--secondary-text);
+            font-size: 1rem;
+        }
+
+        .wip-badge {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: var(--accent-color);
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 0.3rem 0.8rem;
+            border-radius: 99px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+        }
+        
+        .portal-card.disabled {
+            opacity: 0.6;
+            cursor: default;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header style="text-align: center; margin-bottom: 4rem;">
+            <h1 style="font-size: 3.5rem;">Discord Things</h1>
+            <p>A collection of random stuff for Discord.</p>
+        </header>
+
+        <div class="portal-grid">
+            <a href="../fonts/index.html" class="portal-card">
+                <i class="fas fa-font portal-icon"></i>
+                <div class="portal-title">Fonts</div>
+                <div class="portal-desc">Custom fonts for Discord clients. Preview and download.</div>
+            </a>
+            
+            <div class="portal-card disabled">
+                <div class="wip-badge">Work in Progress</div>
+                <i class="fas fa-plug portal-icon"></i>
+                <div class="portal-title">Plugins</div>
+                <div class="portal-desc">Vendetta/Revenge plugins to enhance your experience.</div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Powered by GitHub Pages</p>
+        </footer>
+    </div>
+</body>
+</html>

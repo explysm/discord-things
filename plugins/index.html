@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Things - Plugins</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="container">
+        <header>
+            <h1><a href="../main/index.html" style="text-decoration: none; color: inherit;">Discord Things</a> / Plugins</h1>
+            <p>Vendetta & Revenge Plugins</p>
+
+            <div id="fonts-view-controls">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Find a plugin...">
+                </div>
+            </div>
+        </header>
+
+        <div id="repo-container">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i> Loading plugins...
+            </div>
+        </div>
+
+        <footer>
+            <div style="margin-bottom: 1.5rem;">
+                <a href="https://github.com/explysm/discord-things" target="_blank" class="btn-copy">
+                    <i class="fab fa-github"></i> View Repository
+                </a>
+            </div>
+            <p>Powered by GitHub API</p>
+        </footer>
+    </div>
+
+    <script>
+        const REPO_OWNER = 'explysm';
+        const REPO_NAME = 'discord-things';
+        const CONTENTS_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/plugins`;
+        
+        // Helper: Toast
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'info-circle';
+            if (type === 'success') icon = 'check-circle';
+            if (type === 'error') icon = 'exclamation-circle';
+            
+            toast.innerHTML = `<i class="fas fa-${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Helper: Copy
+        function copyToClipboard(text, btnElement) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Copied to clipboard!', 'success');
+                }).catch(err => {
+                    console.error(err);
+                    showToast('Failed to copy', 'error');
+                });
+            } else {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Copied to clipboard!', 'success');
+            }
+        }
+
+        async function fetchPlugins() {
+            const container = document.getElementById('repo-container');
+            
+            try {
+                const response = await fetch(CONTENTS_URL);
+                if (!response.ok) throw new Error('Failed to fetch plugin list');
+                
+                const items = await response.json();
+                const pluginDirs = items.filter(item => item.type === 'dir');
+                
+                container.innerHTML = '';
+                
+                if (pluginDirs.length === 0) {
+                    container.innerHTML = '<div class="loading">No plugins found.</div>';
+                    return;
+                }
+
+                for (const dir of pluginDirs) {
+                    await createPluginCard(dir, container);
+                }
+
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<div class="loading" style="color: var(--error)">Error: ${err.message}</div>`;
+            }
+        }
+
+        async function createPluginCard(dir, container) {
+            const manifestUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/plugins/${dir.name}/manifest.json`;
+            const pluginUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/plugins/${dir.name}/`;
+            
+            let manifest = { name: dir.name, description: 'No manifest found.', authors: [] };
+            
+            try {
+                const res = await fetch(manifestUrl);
+                if (res.ok) {
+                    manifest = await res.json();
+                }
+            } catch (e) {
+                console.warn(`Could not load manifest for ${dir.name}`);
+            }
+
+            const card = document.createElement('div');
+            card.className = 'repo-card';
+            
+            const authorText = manifest.authors ? manifest.authors.map(a => a.name).join(', ') : 'Unknown';
+            
+            const btnId = `copy-${Math.random().toString(36).substr(2, 9)}`;
+
+            card.innerHTML = `
+                <div class="repo-header">
+                    <span class="repo-name" style="font-size: 1.25rem;">${manifest.name}</span>
+                    <span style="font-size: 0.8rem; color: var(--secondary-text); border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 12px;">Plugin</span>
+                </div>
+                
+                <div style="flex: 1; margin-bottom: 1.5rem;">
+                    <p style="margin-bottom: 0.5rem; color: var(--text-color);">${manifest.description}</p>
+                    <p style="font-size: 0.85rem; color: var(--secondary-text);"><i class="fas fa-user"></i> ${authorText}</p>
+                </div>
+
+                <div class="repo-meta">
+                    <button id="${btnId}" class="btn-primary" style="flex: 1; color: black;">
+                        <i class="fas fa-link"></i> Copy Link
+                    </button>
+                    <a href="${dir.html_url}" target="_blank" class="btn-copy">
+                        <i class="fab fa-github"></i> Source
+                    </a>
+                </div>
+            `;
+            
+            container.appendChild(card);
+            
+            document.getElementById(btnId).addEventListener('click', () => {
+                copyToClipboard(pluginUrl);
+            });
+        }
+
+        // Search
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.repo-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(term) ? 'flex' : 'none';
+            });
+        });
+
+        // Init
+        fetchPlugins();
+
+    </script>
+</body>
+</html>
