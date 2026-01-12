@@ -5,531 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discord Things - Font Viewer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-color: #111;
-            --text-color: #eee;
-            --card-bg: #1a1a1a;
-            --accent-color: #58a6ff;
-            --secondary-text: #8b949e;
-            --border-color: #30363d;
-            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            --btn-bg: #21262d;
-            --btn-hover: #30363d;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-family);
-            line-height: 1.6;
-            padding: 2rem;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        header {
-            margin-bottom: 3rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1rem;
-        }
-
-        header h1 {
-            font-size: 2rem;
-            font-weight: 600;
-        }
-
-        header p {
-            color: var(--secondary-text);
-        }
-
-        #repo-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .repo-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1.5rem;
-            transition: transform 0.2s, border-color 0.2s;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .repo-card:hover {
-            border-color: var(--secondary-text);
-            transform: translateY(-2px);
-        }
-
-        .repo-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .repo-name {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--accent-color);
-            text-decoration: none;
-            word-break: break-all;
-        }
-
-        .preview-area {
-            background-color: #0d1117;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            text-align: center;
-            font-size: 1.8rem;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            color: var(--text-color);
-        }
-
-        .repo-meta {
-            margin-top: auto;
-            display: flex;
-            gap: 1rem;
-            font-size: 0.85rem;
-            color: var(--secondary-text);
-            align-items: center;
-        }
-
-        .btn-copy {
-            background-color: var(--btn-bg);
-            color: var(--accent-color);
-            border: 1px solid var(--border-color);
-            padding: 5px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-        }
-
-        .btn-copy:hover {
-            background-color: var(--btn-hover);
-            border-color: var(--secondary-text);
-            text-decoration: none;
-        }
-
-        .btn-copy:active {
-            transform: scale(0.98);
-        }
-
-        .loading, .error {
-            text-align: center;
-            color: var(--secondary-text);
-            padding: 2rem;
-            grid-column: 1 / -1;
-        }
-
-        .error {
-            color: #f85149;
-        }
-
-        footer {
-            margin-top: 4rem;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--secondary-text);
-            border-top: 1px solid var(--border-color);
-            padding-top: 2rem;
-        }
-
-        footer a {
-            color: var(--secondary-text);
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            color: var(--accent-color);
-        }
-
-        .search-container {
-            margin-top: 1.5rem;
-            position: relative;
-            max-width: 400px;
-        }
-
-        #search-input, #custom-preview-input {
-            width: 100%;
-            padding: 10px 10px 10px 40px;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-color);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        #search-input:focus, #custom-preview-input:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--secondary-text);
-        }
-
-        /* Modals & Interactive Elements */
-        .fab-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s, background-color 0.2s;
-            z-index: 1000;
-        }
-
-        .fab-btn:hover {
-            transform: scale(1.1);
-            background-color: #318bf5;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 2rem;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--secondary-text);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .close-modal:hover {
-            color: var(--text-color);
-        }
-
-        .modal-input, .code-editor {
-            width: 100%;
-            padding: 10px;
-            background: #0d1117;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-color);
-            margin-bottom: 1rem;
-        }
-
-        .code-editor {
-            font-family: monospace;
-            min-height: 200px;
-            resize: vertical;
-        }
-
-        .btn-primary {
-            background-color: #238636;
-            color: white;
-            border: 1px solid rgba(240,246,252,0.1);
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: #2ea043;
-        }
-        
-        .btn-primary:disabled {
-            background-color: #23863680;
-            cursor: not-allowed;
-        }
-
-        .btn-secondary {
-            background-color: var(--btn-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 1rem;
-        }
-
-        .status-msg {
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        .file-drop-area {
-            border: 2px dashed var(--border-color);
-            border-radius: 6px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-bottom: 1rem;
-        }
-
-        .file-drop-area:hover {
-            border-color: var(--accent-color);
-            background-color: rgba(88, 166, 255, 0.05);
-        }
-
-        .file-drop-area i {
-            font-size: 2rem;
-            color: var(--secondary-text);
-            margin-bottom: 0.5rem;
-        }
-
-        .file-name {
-            font-weight: bold;
-            color: var(--accent-color);
-            margin-bottom: 1rem;
-        }
-
-        .input-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .small-text {
-            font-size: 0.85rem;
-            color: var(--secondary-text);
-            margin-bottom: 0.5rem;
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            color: var(--secondary-text);
-            padding: 8px 16px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-        }
-        .tab-btn.active {
-            color: var(--accent-color);
-            border-bottom-color: var(--accent-color);
-        }
-        .map-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            gap: 10px;
-        }
-        .map-label {
-            flex: 1;
-            font-size: 0.85rem;
-            color: var(--text-color);
-        }
-        .map-select {
-            flex: 1;
-            background: #0d1117;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 4px;
-            border-radius: 4px;
-            max-width: 200px;
-        }
-        
-        /* Discord Preview */
-        .discord-preview {
-            background-color: #313338; /* Discord dark theme bg */
-            padding: 10px;
-            border-radius: 4px;
-            display: flex;
-            gap: 10px;
-            text-align: left;
-            align-items: flex-start;
-        }
-        .d-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #5865F2;
-            flex-shrink: 0;
-            background-image: url('https://cdn.discordapp.com/embed/avatars/0.png');
-            background-size: cover;
-        }
-        .d-content {
-            flex: 1;
-            overflow: hidden;
-        }
-        .d-header {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-            margin-bottom: 2px;
-        }
-        .d-user {
-            color: #f2f3f5;
-            font-weight: 500;
-            font-size: 1rem;
-            font-family: var(--font-family); /* User name keeps default font usually */
-        }
-        .d-time {
-            color: #949ba4;
-            font-size: 0.75rem;
-            font-family: var(--font-family);
-        }
-        .d-msg {
-            color: #dbdee1;
-            font-size: 1rem;
-            line-height: 1.375rem;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        /* Glyph Grid */
-        .glyph-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-            gap: 5px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .glyph-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: 0.1s;
-        }
-        .glyph-item:hover {
-            background-color: var(--accent-color);
-            color: white;
-            transform: scale(1.2);
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <h1>Discord Things</h1>
-        <p>Font Repository Viewer</p>
+    <div id="toast-container" class="toast-container"></div>
 
-        <div class="main-navigation" style="display: flex; gap: 10px; margin-top: 20px; border-bottom: 1px solid var(--border-color);">
-            <button class="tab-btn active" data-main-tab="fonts-view">Fonts</button>
-            <button class="tab-btn" data-main-tab="google-fonts-view">Google Fonts</button>
+    <div class="container">
+        <header>
+            <h1>Discord Things</h1>
+            <p>Font Repository Viewer</p>
+
+            <div class="main-navigation">
+                <div class="nav-pill"></div>
+                <button class="tab-btn active" data-main-tab="fonts-view">Fonts</button>
+                <button class="tab-btn" data-main-tab="favorites-view">Favorites</button>
+                <button class="tab-btn" data-main-tab="google-fonts-view">Google Fonts</button>
+            </div>
+
+            <div id="fonts-view-controls">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Find a font...">
+                </div>
+                <div class="search-container" style="margin-top: 10px;">
+                     <i class="fas fa-eye search-icon"></i>
+                     <input type="text" id="custom-preview-input" placeholder="Type to preview text...">
+                </div>
+                
+                <!-- Toolbar -->
+                <div class="toolbar">
+                    <select id="sort-select" class="modal-input">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="az">Name (A-Z)</option>
+                        <option value="za">Name (Z-A)</option>
+                    </select>
+
+                    <button id="refetch-btn" class="btn-secondary" title="Refetch Fonts">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    
+                    <button id="discord-mode-btn" class="btn-secondary" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fab fa-discord"></i> Discord Preview
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div id="fonts-view" class="main-tab-content">
+            <div id="repo-container">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading fonts from GitHub...
+                </div>
+            </div>
         </div>
 
-        <div id="fonts-view-controls">
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" id="search-input" placeholder="Find a font...">
+        <div id="favorites-view" class="main-tab-content" style="display: none;">
+            <div id="favorites-container">
+                <div class="loading">No favorites yet.</div>
             </div>
-            <div class="search-container" style="margin-top: 10px;">
-                 <i class="fas fa-eye search-icon"></i>
-                 <input type="text" id="custom-preview-input" placeholder="Type to preview text...">
+        </div>
+
+        <div id="google-fonts-view" class="main-tab-content" style="display: none; margin-top: 2rem;">
+            <div style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--secondary-text);">
+                Source: <a href="http://github.com/rayzr522/bunny-google-fonts" target="_blank" style="color: var(--accent-color); text-decoration: none;">http://github.com/rayzr522/bunny-google-fonts</a>
             </div>
-            
-            <!-- Toolbar -->
-            <div class="toolbar" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                <select id="sort-select" class="modal-input" style="width: auto; margin-bottom: 0;">
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="az">Name (A-Z)</option>
-                    <option value="za">Name (Z-A)</option>
-                </select>
-                
-                <button id="discord-mode-btn" class="btn-secondary" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <i class="fab fa-discord"></i> Discord Preview
+            <div class="iframe-container" style="width: 100%; height: 80vh; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #fff;">
+                <iframe src="https://bunny-google-fonts.vercel.app/" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+
+        <!-- ... existing footer ... -->
+        <footer>
+            <div style="margin-bottom: 1.5rem;">
+                <a href="https://github.com/explysm/discord-things" target="_blank" class="btn-copy">
+                    <i class="fab fa-github"></i> View Repository
+                </a>
+                <button id="settings-btn" class="btn-copy">
+                    <i class="fas fa-cog"></i> Settings
                 </button>
             </div>
-        </div>
-    </header>
-
-    <div id="fonts-view" class="main-tab-content">
-        <div id="repo-container">
-            <div class="loading">
-                <i class="fas fa-spinner fa-spin"></i> Loading fonts from GitHub...
-            </div>
-        </div>
+            <p>Powered by GitHub API</p>
+        </footer>
     </div>
-
-    <div id="google-fonts-view" class="main-tab-content" style="display: none; margin-top: 2rem;">
-        <div class="iframe-container" style="width: 100%; height: 80vh; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #fff;">
-            <iframe src="https://bunny-google-fonts.vercel.app/" style="width: 100%; height: 100%; border: none;"></iframe>
-        </div>
-    </div>
-
-    <!-- ... existing footer ... -->
-    <footer>
-        <div style="margin-bottom: 1.5rem;">
-            <a href="https://github.com/explysm/discord-things" target="_blank" class="btn-copy">
-                <i class="fab fa-github"></i> View Repository
-            </a>
-            <button id="settings-btn" class="btn-copy">
-                <i class="fas fa-cog"></i> Settings
-            </button>
-        </div>
-        <p>Powered by GitHub API</p>
-    </footer>
 
     <!-- Floating Action Button -->
     <button id="add-font-btn" class="fab-btn" style="display: none;">
@@ -594,9 +153,18 @@
                 <button class="close-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p>Enter your GitHub Personal Access Token to manage fonts.</p>
+                <p>Enter your GitHub Personal Access Token to manage fonts. <br><small style="color: var(--secondary-text); font-style: italic;">*only if you have access to manage the repo</small></p>
                 <input type="password" id="github-token" placeholder="ghp_..." class="modal-input">
                 <div id="login-msg" class="status-msg"></div>
+                
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 500;">Appearance</span>
+                    <button id="theme-toggle-btn" class="btn-secondary" style="width: auto;">
+                        <i class="fas fa-moon"></i> <span>Dark Mode</span>
+                    </button>
+                </div>
             </div>
             <div class="modal-footer">
                 <button id="logout-btn" class="btn-secondary" style="display: none;">Log Out</button>
@@ -697,6 +265,24 @@
         const CACHE_KEY = 'discord_things_fonts_cache';
         const CACHE_DURATION = 1000 * 60 * 10; // 10 minutes
         
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'info-circle';
+            if (type === 'success') icon = 'check-circle';
+            if (type === 'error') icon = 'exclamation-circle';
+            
+            toast.innerHTML = `<i class="fas fa-${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         // State
         let GITHUB_TOKEN = localStorage.getItem('gh_token');
         let uploadedFontUrl = '';
@@ -704,6 +290,46 @@
         
         let currentSort = 'newest';
         let discordMode = false;
+        let favorites = JSON.parse(localStorage.getItem('discord_things_favorites') || '[]');
+
+        function getFavorites() {
+            return favorites;
+        }
+
+        function isFavorite(fontName) {
+            return favorites.includes(fontName);
+        }
+
+        function toggleFavorite(fontName, btnElement) {
+            if (isFavorite(fontName)) {
+                favorites = favorites.filter(f => f !== fontName);
+                btnElement.innerHTML = '<i class="far fa-star"></i>';
+                btnElement.style.color = 'var(--secondary-text)';
+            } else {
+                favorites.push(fontName);
+                btnElement.innerHTML = '<i class="fas fa-star"></i>';
+                btnElement.style.color = 'gold';
+            }
+            localStorage.setItem('discord_things_favorites', JSON.stringify(favorites));
+            
+            // Refresh if in favorites view
+            const activeTab = document.querySelector('.tab-btn.active[data-main-tab="favorites-view"]');
+            if (activeTab) {
+                renderFavorites();
+            }
+        }
+
+        function renderFavorites() {
+            const container = document.getElementById('favorites-container');
+            const favFonts = globalFontData.filter(f => isFavorite(f.name));
+            
+            if (favFonts.length === 0) {
+                container.innerHTML = '<div class="loading">No favorites yet. Star some fonts!</div>';
+                return;
+            }
+            
+            renderFontList(favFonts, container);
+        }
 
         // DOM Elements
         const settingsBtn = document.getElementById('settings-btn');
@@ -714,6 +340,7 @@
         const glyphsModal = document.getElementById('glyphs-modal');
         
         const sortSelect = document.getElementById('sort-select');
+        const refetchBtn = document.getElementById('refetch-btn');
         const discordModeBtn = document.getElementById('discord-mode-btn');
 
         const addFontBtn = document.getElementById('add-font-btn');
@@ -721,6 +348,31 @@
         const loginSubmit = document.getElementById('login-submit');
         const logoutBtn = document.getElementById('logout-btn');
         const loginMsg = document.getElementById('login-msg');
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        
+        // Theme Logic
+        let isLightMode = localStorage.getItem('discord_things_theme') === 'light';
+        
+        function updateTheme() {
+            if (isLightMode) {
+                document.body.classList.add('light-mode');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> <span>Light Mode</span>';
+            } else {
+                document.body.classList.remove('light-mode');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i> <span>Dark Mode</span>';
+            }
+            localStorage.setItem('discord_things_theme', isLightMode ? 'light' : 'dark');
+        }
+        
+        // Initialize Theme
+        updateTheme();
+        
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                isLightMode = !isLightMode;
+                updateTheme();
+            });
+        }
         
         // ... (Upload Elements remain same) ...
         // Upload Elements
@@ -756,6 +408,16 @@
             });
         }
 
+        if (refetchBtn) {
+            refetchBtn.addEventListener('click', () => {
+                const icon = refetchBtn.querySelector('i');
+                icon.classList.add('fa-spin');
+                fetchFonts(true).then(() => {
+                    setTimeout(() => icon.classList.remove('fa-spin'), 500);
+                });
+            });
+        }
+
         if (discordModeBtn) {
             discordModeBtn.addEventListener('click', () => {
                 discordMode = !discordMode;
@@ -764,30 +426,104 @@
             });
         }
 
+        const HASH_MAP = {
+            '#fonts': 'fonts-view',
+            '#favorites': 'favorites-view',
+            '#google-fonts': 'google-fonts-view'
+        };
+        const TAB_TO_HASH = Object.fromEntries(Object.entries(HASH_MAP).map(([k, v]) => [v, k]));
+
+        function updateNavPill(activeBtn) {
+            const pill = document.querySelector('.nav-pill');
+            if (!pill || !activeBtn) return;
+            
+            pill.style.width = `${activeBtn.offsetWidth}px`;
+            pill.style.left = `${activeBtn.offsetLeft}px`;
+        }
+
+        function switchTab(targetId) {
+             const btn = document.querySelector(`[data-main-tab="${targetId}"]`);
+             if (!btn) return;
+
+             // Deactivate all main tabs
+             document.querySelectorAll('[data-main-tab]').forEach(b => b.classList.remove('active'));
+             document.querySelectorAll('.main-tab-content').forEach(c => c.style.display = 'none');
+             
+             // Activate clicked
+             btn.classList.add('active');
+             document.getElementById(targetId).style.display = 'block';
+             
+             // Move Pill
+             updateNavPill(btn);
+             
+             // Update Hash if needed
+             const newHash = TAB_TO_HASH[targetId];
+             if (history.pushState) {
+                 history.pushState(null, null, newHash);
+             } else {
+                 location.hash = newHash;
+             }
+
+             // Show/Hide controls
+             const controls = document.getElementById('fonts-view-controls');
+             if (targetId === 'fonts-view' || targetId === 'favorites-view') {
+                 controls.style.display = 'block';
+                 if (targetId === 'favorites-view') {
+                      renderFavorites();
+                 } else {
+                     if(globalFontData.length > 0) renderFontList(globalFontData, document.getElementById('repo-container'));
+                 }
+             } else {
+                 controls.style.display = 'none';
+             }
+             checkAuth();
+        }
+
         // Main Tab Switching
         document.querySelectorAll('[data-main-tab]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetId = btn.dataset.mainTab;
-                
-                // Deactivate all main tabs
-                document.querySelectorAll('[data-main-tab]').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.main-tab-content').forEach(c => c.style.display = 'none');
-                
-                // Activate clicked
-                btn.classList.add('active');
-                document.getElementById(targetId).style.display = 'block';
-                
-                // Show/Hide controls
-                const controls = document.getElementById('fonts-view-controls');
-                if (targetId === 'fonts-view') {
-                    controls.style.display = 'block';
-                } else {
-                    controls.style.display = 'none';
-                }
-                checkAuth();
+                switchTab(targetId);
             });
         });
 
+        // Handle Initial Hash & Back Button
+        function handleHashChange() {
+            const hash = location.hash || '#fonts';
+            const targetId = HASH_MAP[hash];
+            if (targetId) {
+                // If we are already on this tab, do nothing? 
+                // Actually, switchTab handles UI updates, so it's safe.
+                // But we should avoid pushing state again if it came from popstate.
+                // Simplified: Just reuse switchTab but suppress history push if called from here?
+                // For simplicity, let's just trigger the click on the button, but updating hash 
+                // again in switchTab might be redundant but harmless with pushState.
+                
+                // Let's manually trigger the UI update part without recursion loop
+                // Or better, just call switchTab. It replaces the hash which is fine.
+                // Wait, if I use history.pushState in switchTab, back button might get weird 
+                // if I don't handle popstate correctly.
+                
+                // Let's refine switchTab to accept a "updateHistory" flag.
+            }
+        }
+        
+        window.addEventListener('load', () => {
+             const hash = location.hash;
+             if (HASH_MAP[hash]) {
+                 switchTab(HASH_MAP[hash]);
+             } else {
+                 // Default to first tab if no hash
+                 const firstBtn = document.querySelector('[data-main-tab]');
+                 if(firstBtn) updateNavPill(firstBtn);
+             }
+        });
+
+        window.addEventListener('resize', () => {
+             const activeBtn = document.querySelector('[data-main-tab].active');
+             if(activeBtn) updateNavPill(activeBtn);
+        });
+        
         // Modal Tabs
         document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -852,7 +588,7 @@
                         GITHUB_TOKEN = token;
                         checkAuth();
                         closeModal(loginModal);
-                        alert('Logged in successfully!');
+                        showToast('Logged in successfully!', 'success');
                     } else {
                         throw new Error('Could not access repository info.');
                     }
@@ -861,7 +597,7 @@
                 }
             } catch (err) {
                 loginMsg.textContent = err.message;
-                loginMsg.style.color = '#f85149';
+                loginMsg.style.color = '#f87171';
             }
         });
 
@@ -1100,8 +836,11 @@
 
                 await githubUpload(path, content, `Add font definition: ${jsonData.name}`);
 
+                publishStatus.textContent = 'Updating README...';
+                await updateReadme(jsonData.name, path);
+
                 closeModal(uploadModal);
-                alert('Font published successfully!');
+                showToast('Font published successfully!', 'success');
                 fetchFonts(); // Refresh grid
 
             } catch (err) {
@@ -1113,6 +852,102 @@
         });
 
         // --- Helpers ---
+
+        async function updateReadme(fontName, jsonPath) {
+             const readmePath = 'README.md';
+             const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${jsonPath}`;
+             
+             // Fetch current README
+             const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${readmePath}`;
+             const res = await fetch(url, { headers: { 'Authorization': `token ${GITHUB_TOKEN}` }});
+             
+             if (!res.ok) throw new Error('Failed to fetch README');
+             
+             const data = await res.json();
+             // Decode content safely
+             let currentContent = '';
+             try {
+                 currentContent = decodeURIComponent(escape(atob(data.content)));
+             } catch(e) {
+                 // Fallback if content is not UTF-8 encoded properly or simple ASCII
+                 currentContent = atob(data.content);
+             }
+             
+             // Append new info
+             const newEntry = `\n\n### ${fontName}\n\`\`\`\n${rawUrl}\n\`\`\``;
+             const newContent = currentContent + newEntry;
+             
+             // Encode content safely
+             const encodedContent = btoa(unescape(encodeURIComponent(newContent)));
+             
+             const body = {
+                 message: `Update README for ${fontName}`,
+                 content: encodedContent,
+                 sha: data.sha
+             };
+
+             const updateRes = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+            
+            if (!updateRes.ok) throw new Error('Failed to update README');
+        }
+
+        async function removeFromReadme(fontName) {
+             const readmePath = 'README.md';
+             
+             // Fetch current README
+             const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${readmePath}`;
+             const res = await fetch(url, { headers: { 'Authorization': `token ${GITHUB_TOKEN}` }});
+             
+             if (!res.ok) {
+                 console.error('Failed to fetch README for deletion');
+                 return;
+             }
+             
+             const data = await res.json();
+             let currentContent = '';
+             try {
+                 currentContent = decodeURIComponent(escape(atob(data.content)));
+             } catch(e) {
+                 currentContent = atob(data.content);
+             }
+             
+             // Safe regex for font name
+             const safeName = fontName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+             const regex = new RegExp(`\\n*### ${safeName}\\n+\`\`\`[\\s\\S]*?\`\`\``, 'g');
+             
+             if (!regex.test(currentContent)) {
+                 console.log('Font section not found in README');
+                 return;
+             }
+             
+             const newContent = currentContent.replace(regex, '').trim() + '\n'; // Clean up and ensure trailing newline
+             
+             const encodedContent = btoa(unescape(encodeURIComponent(newContent)));
+             
+             const body = {
+                 message: `Remove ${fontName} from README`,
+                 content: encodedContent,
+                 sha: data.sha
+             };
+
+             const updateRes = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+            
+            if (!updateRes.ok) console.error('Failed to update README');
+        }
 
         async function githubUpload(path, contentBase64, message) {
             const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
@@ -1308,6 +1143,7 @@
             
             // Using a unique ID for the button to attach event listener
             const btnId = `btn-${Math.random().toString(36).substr(2, 9)}`;
+            const favBtnId = `fav-${Math.random().toString(36).substr(2, 9)}`;
             const deleteBtnId = `del-${Math.random().toString(36).substr(2, 9)}`;
             const editBtnId = `edit-${Math.random().toString(36).substr(2, 9)}`;
             const cssBtnId = `css-${Math.random().toString(36).substr(2, 9)}`;
@@ -1336,11 +1172,17 @@
                     </div>
                 `;
             }
+            
+            const isFav = isFavorite(fontData.name);
+            const favIconClass = isFav ? 'fas' : 'far';
+            const favColor = isFav ? 'gold' : 'var(--accent-color)'; // using accent color for button text usually, but for star let's be specific or inherit
 
             card.innerHTML = `
                 <div class="repo-header">
                     <a href="${fontData.githubUrl}" target="_blank" class="repo-name">${fontData.name}</a>
-                    <span class="repo-visibility">JSON</span>
+                    <button id="${favBtnId}" class="btn-copy" style="border: none; background: none; color: ${isFav ? 'gold' : 'var(--secondary-text)'}; padding: 0; font-size: 1.2rem;" title="Toggle Favorite">
+                        <i class="${favIconClass} fa-star"></i>
+                    </button>
                 </div>
                 ${previewContent}
                 <div class="repo-meta">
@@ -1366,6 +1208,7 @@
             container.appendChild(card);
 
             // Listeners
+            document.getElementById(favBtnId).onclick = (e) => { e.preventDefault(); toggleFavorite(fontData.name, e.target.closest('button')); };
             document.getElementById(btnId).onclick = (e) => { e.preventDefault(); copyToClipboard(fontData.rawUrl, e.target.closest('button')); };
             document.getElementById(deleteBtnId).onclick = (e) => { e.preventDefault(); deleteFont(fontData); };
             document.getElementById(editBtnId).onclick = (e) => { e.preventDefault(); openEditModal(fontData); };
@@ -1453,7 +1296,7 @@
                  await githubUpload(currentEditingFont.jsonPath, base64Content, `Update font definition: ${jsonData.name}`);
                  
                  closeModal(editModal);
-                 alert('Font updated successfully!');
+                 showToast('Font updated successfully!', 'success');
                  fetchFonts(true); // Force refresh
              } catch(e) {
                  console.error(e);
@@ -1493,12 +1336,15 @@
                     }
                 }
 
-                alert('Font deleted successfully.');
+                // Remove from README
+                await removeFromReadme(fontData.name);
+
+                showToast('Font deleted successfully.', 'success');
                 fetchFonts(true);
 
             } catch (err) {
                 console.error(err);
-                alert(`Error deleting font: ${err.message}`);
+                showToast(`Error deleting font: ${err.message}`, 'error');
             }
         }
         
