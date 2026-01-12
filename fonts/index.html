@@ -13,7 +13,7 @@
 
     <div class="container">
         <header>
-            <h1><a href="../main/index.html" style="text-decoration: none; color: inherit;">Discord Things</a> / Fonts</h1>
+            <h1><a href="../index.html" style="text-decoration: none; color: inherit;">Discord Things</a> / Fonts</h1>
             <p>Font Repository Viewer</p>
 
             <div class="main-navigation">
@@ -67,12 +67,11 @@
             </div>
         </div>
 
-        <div id="google-fonts-view" class="main-tab-content" style="display: none; margin-top: 2rem;">
-            <div style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--secondary-text);">
-                Source: <a href="http://github.com/rayzr522/bunny-google-fonts" target="_blank" style="color: var(--accent-color); text-decoration: none;">http://github.com/rayzr522/bunny-google-fonts</a>
-            </div>
-            <div class="iframe-container" style="width: 100%; height: 80vh; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #fff;">
-                <iframe src="https://bunny-google-fonts.vercel.app/" style="width: 100%; height: 100%; border: none;"></iframe>
+        <div id="google-fonts-view" class="main-tab-content" style="display: none;">
+            <div id="redirect-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; text-align: center;">
+                <div class="loader-ring"></div>
+                <h2 style="margin-top: 2rem; font-weight: 600;">Redirecting to Google Fonts...</h2>
+                <p style="color: var(--secondary-text);">Powered by Bunny Fonts</p>
             </div>
         </div>
 
@@ -466,7 +465,14 @@
 
              // Show/Hide controls
              const controls = document.getElementById('fonts-view-controls');
-             if (targetId === 'fonts-view' || targetId === 'favorites-view') {
+             
+             if (targetId === 'google-fonts-view') {
+                 controls.style.display = 'none';
+                 // Trigger redirect after a short delay for the animation
+                 setTimeout(() => {
+                     window.location.href = 'https://bunny-google-fonts.vercel.app/';
+                 }, 1500);
+             } else if (targetId === 'fonts-view' || targetId === 'favorites-view') {
                  controls.style.display = 'block';
                  if (targetId === 'favorites-view') {
                       renderFavorites();
