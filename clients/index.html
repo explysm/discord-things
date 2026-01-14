@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Things - Client Viewer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="container">
+        <header>
+            <h1><a href="../index.html" style="text-decoration: none; color: inherit;">Discord Things</a> / Clients</h1>
+            <p>Client Database</p>
+
+            <div id="clients-view-controls">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Find a client...">
+                </div>
+                
+                <div class="toolbar">
+                    <select id="sort-select" class="modal-input">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="az">Name (A-Z)</option>
+                        <option value="za">Name (Z-A)</option>
+                    </select>
+
+                    <button id="refetch-btn" class="btn-secondary" title="Refetch Clients">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div id="repo-container">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i> Loading clients from GitHub...
+            </div>
+        </div>
+
+        <footer>
+            <div style="margin-bottom: 1.5rem;">
+                <a href="https://github.com/explysm/discord-things" target="_blank" class="btn-copy">
+                    <i class="fab fa-github"></i> View Repository
+                </a>
+                <button id="settings-btn" class="btn-copy">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+            </div>
+            <p>Powered by GitHub API</p>
+        </footer>
+    </div>
+
+    <button id="add-client-btn" class="fab-btn" style="display: none;">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Client JSON</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="small-text">Modify the JSON definition directly.</p>
+                <textarea id="edit-json-editor" class="code-editor"></textarea>
+                <div id="edit-status" class="status-msg"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="save-edit-btn" class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Enter your GitHub Personal Access Token to manage clients. <br><small style="color: var(--secondary-text); font-style: italic;">*only if you have access to manage the repo</small></p>
+                <input type="password" id="github-token" placeholder="ghp_..." class="modal-input">
+                <div id="login-msg" class="status-msg"></div>
+                
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 500;">Appearance</span>
+                    <button id="theme-toggle-btn" class="btn-secondary" style="width: auto;">
+                        <i class="fas fa-moon"></i> <span>Dark Mode</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="logout-btn" class="btn-secondary" style="display: none;">Log Out</button>
+                <button id="login-submit" class="btn-primary">Log In</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="upload-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Client</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label class="input-label">Name</label>
+                <input type="text" id="client-name" class="modal-input" placeholder="Client Name">
+                
+                <label class="input-label" style="margin-top: 1rem;">Description</label>
+                <textarea id="client-desc" class="modal-input" placeholder="A brief description of the client." style="height: 100px; resize: vertical; padding-top: 10px;"></textarea>
+
+                <label class="input-label" style="margin-top: 1rem;">Link</label>
+                <input type="url" id="client-link" class="modal-input" placeholder="https://example.com">
+
+                <label class="input-label" style="margin-top: 1rem;">Icon (Optional)</label>
+                <input type="file" id="client-icon-file" class="modal-input" accept="image/*">
+
+                <label class="input-label" style="margin-top: 1rem;">Tags (comma-separated)</label>
+                <input type="text" id="client-tags" class="modal-input" placeholder="e.g. mobile, pc, linux">
+
+                <div id="publish-status" class="status-msg"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="publish-btn" class="btn-primary">Publish Client</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const REPO_OWNER = 'explysm';
+        const REPO_NAME = 'discord-things';
+        const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/clients/json`;
+        const CACHE_KEY = 'discord_things_clients_cache';
+        const CACHE_DURATION = 1000 * 60 * 10; // 10 minutes
+        
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'info-circle';
+            if (type === 'success') icon = 'check-circle';
+            if (type === 'error') icon = 'exclamation-circle';
+            
+            toast.innerHTML = `<i class="fas fa-${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        let GITHUB_TOKEN = localStorage.getItem('gh_token');
+        let currentSort = 'newest';
+        let globalClientData = [];
+
+        const settingsBtn = document.getElementById('settings-btn');
+        const loginModal = document.getElementById('login-modal');
+        const uploadModal = document.getElementById('upload-modal');
+        const editModal = document.getElementById('edit-modal');
+        
+        const sortSelect = document.getElementById('sort-select');
+        const refetchBtn = document.getElementById('refetch-btn');
+        const addClientBtn = document.getElementById('add-client-btn');
+        
+        const tokenInput = document.getElementById('github-token');
+        const loginSubmit = document.getElementById('login-submit');
+        const logoutBtn = document.getElementById('logout-btn');
+        const loginMsg = document.getElementById('login-msg');
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        
+        let isLightMode = localStorage.getItem('discord_things_theme') === 'light';
+        
+        function updateTheme() {
+            if (isLightMode) {
+                document.body.classList.add('light-mode');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> <span>Light Mode</span>';
+            } else {
+                document.body.classList.remove('light-mode');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i> <span>Dark Mode</span>';
+            }
+            localStorage.setItem('discord_things_theme', isLightMode ? 'light' : 'dark');
+        }
+        
+        updateTheme();
+        
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                isLightMode = !isLightMode;
+                updateTheme();
+            });
+        }
+        
+        const publishBtn = document.getElementById('publish-btn');
+        const publishStatus = document.getElementById('publish-status');
+        
+        checkAuth();
+        fetchClients();
+        
+        if (sortSelect) {
+            sortSelect.addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                if(globalClientData.length > 0) renderClientList(globalClientData);
+            });
+        }
+
+        if (refetchBtn) {
+            refetchBtn.addEventListener('click', () => {
+                const icon = refetchBtn.querySelector('i');
+                icon.classList.add('fa-spin');
+                fetchClients(true).then(() => {
+                    setTimeout(() => icon.classList.remove('fa-spin'), 500);
+                });
+            });
+        }
+
+        settingsBtn.addEventListener('click', () => openModal(loginModal));
+        addClientBtn.addEventListener('click', () => {
+            resetUploadForm();
+            openModal(uploadModal);
+        });
+
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', (e) => closeModal(e.target.closest('.modal-overlay')));
+        });
+
+        window.onclick = (event) => {
+            if (event.target.classList.contains('modal-overlay')) {
+                closeModal(event.target);
+            }
+        };
+
+        function openModal(modal) {
+            modal.style.display = 'flex';
+            modal.style.opacity = 1;
+        }
+
+        function closeModal(modal) {
+            modal.style.opacity = 0;
+            setTimeout(() => modal.style.display = 'none', 200);
+        }
+
+        loginSubmit.addEventListener('click', async () => {
+            const token = tokenInput.value.trim();
+            if (!token) return;
+
+            loginMsg.textContent = 'Verifying...';
+            loginMsg.style.color = 'var(--secondary-text)';
+
+            try {
+                const response = await fetch('https://api.github.com/user', { headers: { 'Authorization': `token ${token}` } });
+                if (response.ok) {
+                    const repoRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, { headers: { 'Authorization': `token ${token}` } });
+                    if (repoRes.ok) {
+                        const repoData = await repoRes.json();
+                        if (!repoData.permissions.push) throw new Error('You do not have write access to this repository.');
+                        
+                        localStorage.setItem('gh_token', token);
+                        GITHUB_TOKEN = token;
+                        checkAuth();
+                        closeModal(loginModal);
+                        showToast('Logged in successfully!', 'success');
+                    } else {
+                        throw new Error('Could not access repository info.');
+                    }
+                } else {
+                    throw new Error('Invalid token.');
+                }
+            } catch (err) {
+                loginMsg.textContent = err.message;
+                loginMsg.style.color = 'var(--error)';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('gh_token');
+            GITHUB_TOKEN = null;
+            checkAuth();
+            loginMsg.textContent = 'Logged out.';
+        });
+
+        function resetUploadForm() {
+            document.getElementById('client-name').value = '';
+            document.getElementById('client-desc').value = '';
+            document.getElementById('client-link').value = '';
+            document.getElementById('client-icon-file').value = '';
+            publishStatus.textContent = '';
+            publishBtn.disabled = false;
+        }
+
+        publishBtn.addEventListener('click', async () => {
+            const name = document.getElementById('client-name').value.trim();
+            const desc = document.getElementById('client-desc').value.trim();
+            const link = document.getElementById('client-link').value.trim();
+            const iconFile = document.getElementById('client-icon-file').files[0];
+
+            if (!name || !link) {
+                publishStatus.textContent = 'Name and Link are required.';
+                publishStatus.style.color = 'var(--error)';
+                return;
+            }
+
+            publishStatus.textContent = 'Publishing client...';
+            publishStatus.style.color = 'var(--accent-color)';
+            publishBtn.disabled = true;
+
+            try {
+                let iconUrl = '';
+                const safeName = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+                if (iconFile) {
+                    publishStatus.textContent = 'Uploading icon...';
+                    const extension = iconFile.name.split('.').pop();
+                    const iconPath = `clients/assets/${safeName}.${extension}`;
+                    const content = await toBase64(iconFile);
+                    
+                    await githubUpload(iconPath, content, `Add icon for client: ${name}`);
+                    iconUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${iconPath}`;
+                }
+
+                publishStatus.textContent = 'Creating JSON definition...';
+                const clientJson = { name, desc, link, iconUrl };
+                const jsonPath = `clients/json/${safeName}.json`;
+                const jsonContent = btoa(unescape(encodeURIComponent(JSON.stringify(clientJson, null, 2))));
+                
+                await githubUpload(jsonPath, jsonContent, `Add client: ${name}`);
+
+                closeModal(uploadModal);
+                showToast('Client published successfully!', 'success');
+                fetchClients(true);
+
+            } catch (err) {
+                console.error(err);
+                publishStatus.textContent = `Error: ${err.message}`;
+                publishStatus.style.color = 'var(--error)';
+            } finally {
+                publishBtn.disabled = false;
+            }
+        });
+
+        async function githubUpload(path, contentBase64, message) {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+            let sha = await getFileSha(path);
+
+            const body = { message, content: contentBase64 };
+            if (sha) body.sha = sha;
+
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Upload failed');
+            }
+        }
+
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function fetchClients(forceRefresh = false) {
+            const container = document.getElementById('repo-container');
+            
+            if (!forceRefresh) {
+                const cached = localStorage.getItem(CACHE_KEY);
+                if (cached) {
+                    try {
+                        const { timestamp, data } = JSON.parse(cached);
+                        if (Date.now() - timestamp < CACHE_DURATION) {
+                            globalClientData = data;
+                            renderClientList(data);
+                            return;
+                        }
+                    } catch (e) {
+                         console.error("Cache parse error", e);
+                         localStorage.removeItem(CACHE_KEY);
+                    }
+                }
+            }
+            
+            container.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading clients from GitHub...</div>`;
+
+            try {
+                const headers = {};
+                if (GITHUB_TOKEN) headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+
+                const response = await fetch(API_URL, { headers });
+                if (!response.ok) throw new Error(`GitHub API Error: ${response.statusText}`);
+                
+                const files = (await response.json()).filter(file => file.name.endsWith('.json'));
+
+                if (files.length === 0) {
+                    container.innerHTML = '<div class="error">No clients found.</div>';
+                    return;
+                }
+
+                const clientPromises = files.map(async file => {
+                    try {
+                        const fileRes = await fetch(file.download_url);
+                        const clientData = await fileRes.json();
+                        return { ...clientData, jsonPath: file.path, jsonSha: file.sha };
+                    } catch (e) {
+                        console.error('Error fetching client json:', file.name, e);
+                        return null;
+                    }
+                });
+
+                const clients = (await Promise.all(clientPromises)).filter(c => c !== null);
+
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: clients }));
+                globalClientData = clients;
+                renderClientList(clients);
+
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = `<div class="error">Failed to load clients: ${error.message}</div>`;
+            }
+        }
+
+        function renderClientList(clients) {
+            const container = document.getElementById('repo-container');
+            container.innerHTML = '';
+            
+            let sortedClients = [...clients];
+            if (currentSort === 'az') sortedClients.sort((a, b) => a.name.localeCompare(b.name));
+            else if (currentSort === 'za') sortedClients.sort((a, b) => b.name.localeCompare(a.name));
+            else if (currentSort === 'oldest') sortedClients.reverse();
+            
+            sortedClients.forEach(client => createClientCard(client, container));
+            checkAuth();
+            
+            const searchTerm = searchInput.value.toLowerCase();
+            if (searchTerm) {
+                 document.querySelectorAll('.repo-card').forEach(card => {
+                    const name = card.querySelector('.repo-name').textContent.toLowerCase();
+                    card.style.display = name.includes(searchTerm) ? 'flex' : 'none';
+                 });
+            }
+        }
+
+        function createClientCard(clientData, container) {
+            const card = document.createElement('div');
+            card.className = 'repo-card';
+            
+            const deleteBtnId = `del-${Math.random().toString(36).substr(2, 9)}`;
+            const editBtnId = `edit-${Math.random().toString(36).substr(2, 9)}`;
+            
+            card.innerHTML = `
+                <div class="repo-header">
+                    <span class="repo-name">${clientData.name}</span>
+                </div>
+
+                <div class="client-details">
+                    ${clientData.iconUrl ? `<img src="${clientData.iconUrl}" alt="${clientData.name} Icon" class="client-icon">` : '<div class="client-icon"></div>'}
+                    <div class="client-info">
+                         <p class="client-desc">${clientData.desc || 'No description provided.'}</p>
+                    </div>
+                </div>
+
+                <div class="repo-meta">
+                    <a href="${clientData.link}" target="_blank" class="btn-copy" title="Visit Link">
+                        <i class="fas fa-external-link-alt"></i> Visit
+                    </a>
+                    <button id="${editBtnId}" class="btn-copy btn-delete" style="display: none;" title="Edit JSON">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button id="${deleteBtnId}" class="btn-copy btn-delete" style="display: none; color: #f85149;" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(card);
+
+            document.getElementById(deleteBtnId).onclick = (e) => { e.preventDefault(); deleteClient(clientData); };
+            document.getElementById(editBtnId).onclick = (e) => { e.preventDefault(); openEditModal(clientData); };
+        }
+        
+        const editJsonEditor = document.getElementById('edit-json-editor');
+        const saveEditBtn = document.getElementById('save-edit-btn');
+        const editStatus = document.getElementById('edit-status');
+        let currentEditingClient = null;
+
+        function openEditModal(clientData) {
+            currentEditingClient = clientData;
+            const cleanData = { ...clientData };
+            delete cleanData.jsonPath;
+            delete cleanData.jsonSha;
+            
+            editJsonEditor.value = JSON.stringify(cleanData, null, 2);
+            editStatus.textContent = '';
+            openModal(editModal);
+        }
+
+        saveEditBtn.addEventListener('click', async () => {
+             if (!currentEditingClient) return;
+             const content = editJsonEditor.value;
+             let jsonData;
+             try {
+                 jsonData = JSON.parse(content);
+             } catch(e) {
+                 editStatus.textContent = "Invalid JSON";
+                 editStatus.style.color = 'var(--error)';
+                 return;
+             }
+             
+             saveEditBtn.disabled = true;
+             editStatus.textContent = "Saving...";
+             editStatus.style.color = 'var(--accent-color)';
+             
+             try {
+                const safeName = jsonData.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                const newPath = `clients/json/${safeName}.json`;
+
+                // If name changes, we need to delete old file
+                if (currentEditingClient.jsonPath !== newPath) {
+                    await githubDelete(currentEditingClient.jsonPath, currentEditingClient.jsonSha, `Rename client: ${currentEditingClient.name} to ${jsonData.name}`);
+                }
+
+                const base64Content = btoa(unescape(encodeURIComponent(content)));
+                await githubUpload(newPath, base64Content, `Update client: ${jsonData.name}`);
+                 
+                 closeModal(editModal);
+                 showToast('Client updated successfully!', 'success');
+                 fetchClients(true);
+             } catch(e) {
+                 console.error(e);
+                 editStatus.textContent = `Error: ${e.message}`;
+                 editStatus.style.color = 'var(--error)';
+             } finally {
+                 saveEditBtn.disabled = false;
+             }
+        });
+
+        async function deleteClient(clientData) {
+            if (!confirm(`Are you sure you want to delete "${clientData.name}"?`)) return;
+            
+            try {
+                showToast('Deleting client...', 'info');
+                // 1. Delete JSON file
+                await githubDelete(clientData.jsonPath, clientData.jsonSha, `Delete client: ${clientData.name}`);
+                
+                // 2. Delete icon if it exists
+                if (clientData.iconUrl) {
+                    try {
+                        const iconPath = clientData.iconUrl.match(/main\/(.*)$/)[1];
+                        if (iconPath) {
+                            const sha = await getFileSha(iconPath);
+                            if (sha) await githubDelete(iconPath, sha, `Delete icon for: ${clientData.name}`);
+                        }
+                    } catch (e) {
+                        console.error(`Failed to delete icon: ${clientData.iconUrl}`, e);
+                        showToast('Could not delete icon file, but JSON was deleted.', 'error');
+                    }
+                }
+
+                showToast('Client deleted successfully.', 'success');
+                fetchClients(true);
+
+            } catch (err) {
+                console.error(err);
+                showToast(`Error deleting client: ${err.message}`, 'error');
+            }
+        }
+
+        async function getFileSha(path) {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+            const headers = { 'Authorization': `token ${GITHUB_TOKEN}` };
+            try {
+                const res = await fetch(url, { headers });
+                if (res.ok) {
+                    const data = await res.json();
+                    return data.sha;
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        async function githubDelete(path, sha, message) {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message, sha })
+            });
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Delete failed');
+            }
+        }
+
+        function checkAuth() {
+            if (GITHUB_TOKEN) {
+                if (addClientBtn) addClientBtn.style.display = 'flex';
+                if (tokenInput) tokenInput.style.display = 'none';
+                if (loginSubmit) loginSubmit.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'block';
+                if (loginMsg) {
+                    loginMsg.textContent = 'You are logged in.';
+                    loginMsg.style.color = '#2ea043';
+                }
+                document.querySelectorAll('.btn-delete').forEach(el => el.style.display = 'inline-flex');
+            } else {
+                if (addClientBtn) addClientBtn.style.display = 'none';
+                if (tokenInput) tokenInput.style.display = 'block';
+                if (loginSubmit) loginSubmit.style.display = 'block';
+                if (logoutBtn) logoutBtn.style.display = 'none';
+                if (loginMsg) {
+                    loginMsg.textContent = '';
+                    tokenInput.value = '';
+                }
+                document.querySelectorAll('.btn-delete').forEach(el => el.style.display = 'none');
+            }
+        }
+
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.repo-card');
+            
+            cards.forEach(card => {
+                const name = card.querySelector('.repo-name').textContent.toLowerCase();
+                card.style.display = name.includes(searchTerm) ? 'flex' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
