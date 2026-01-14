@@ -13,3 +13,8 @@ https://raw.githubusercontent.com/explysm/discord-things/main/fonts/papyrus.json
 ```
 https://raw.githubusercontent.com/explysm/discord-things/main/fonts/comic-sans.json
 ```
+
+### avali scratch
+```
+https://raw.githubusercontent.com/explysm/discord-things/main/fonts/avali-scratch.json
+```
