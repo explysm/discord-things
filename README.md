@@ -18,3 +18,8 @@ https://raw.githubusercontent.com/explysm/discord-things/main/fonts/comic-sans.j
 ```
 https://raw.githubusercontent.com/explysm/discord-things/main/fonts/avali-scratch.json
 ```
+
+### Minecraft Ten
+```
+https://raw.githubusercontent.com/explysm/discord-things/main/fonts/minecraft-ten.json
+```
