@@ -23,3 +23,8 @@ https://raw.githubusercontent.com/explysm/discord-things/main/fonts/avali-scratc
 ```
 https://raw.githubusercontent.com/explysm/discord-things/main/fonts/minecraft-ten.json
 ```
+
+### mojangles seven
+```
+https://raw.githubusercontent.com/explysm/discord-things/main/fonts/mojangles-seven.json
+```
