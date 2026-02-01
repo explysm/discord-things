@@ -1,0 +1,11 @@
+{
+  "name": "Voxi",
+  "desc": "A Discord mobile app client, fork of Revenge Classic with additional features",
+  "link": "https://github.com/ApexTeamPL/voxi-bundle",
+  "iconUrl": "https://avatars.githubusercontent.com/u/221149414?s=48&v=4",
+  "status": "actively-maintained",
+  "tags": [
+    "mobiile",
+    "android"
+  ]
+}
