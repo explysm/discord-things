@@ -23,6 +23,15 @@
                 </div>
                 
                 <div class="toolbar">
+                    <select id="platform-filter" class="modal-input">
+                        <option value="">All Platforms</option>
+                        <option value="ios">iOS</option>
+                        <option value="android">Android</option>
+                        <option value="linux">Linux</option>
+                        <option value="mac">Mac</option>
+                        <option value="windows">Windows</option>
+                    </select>
+                    
                     <select id="sort-select" class="modal-input">
                         <option value="newest">Newest First</option>
                         <option value="oldest">Oldest First</option>
@@ -144,6 +153,7 @@
                     <option value="actively-maintained">Actively Maintained</option>
                     <option value="still-in-development">Still in Development</option>
                     <option value="discontinued">Discontinued</option>
+                    <option value="broken">Broken</option>
                 </select>
 
                 <label class="input-label" style="margin-top: 1rem;">Tags (comma-separated)</label>
@@ -192,6 +202,7 @@
         const editModal = document.getElementById('edit-modal');
         
         const sortSelect = document.getElementById('sort-select');
+        const platformFilter = document.getElementById('platform-filter');
         const refetchBtn = document.getElementById('refetch-btn');
         const addClientBtn = document.getElementById('add-client-btn');
         
@@ -232,6 +243,12 @@
         if (sortSelect) {
             sortSelect.addEventListener('change', (e) => {
                 currentSort = e.target.value;
+                if(globalClientData.length > 0) renderClientList(globalClientData);
+            });
+        }
+
+        if (platformFilter) {
+            platformFilter.addEventListener('change', () => {
                 if(globalClientData.length > 0) renderClientList(globalClientData);
             });
         }
@@ -507,18 +524,34 @@
             sortedClients.forEach(client => createClientCard(client, container));
             checkAuth();
             
+            applyFilters();
+        }
+
+        function applyFilters() {
             const searchTerm = searchInput.value.toLowerCase();
-            if (searchTerm) {
-                 document.querySelectorAll('.repo-card').forEach(card => {
-                    const name = card.querySelector('.repo-name').textContent.toLowerCase();
-                    const desc = card.querySelector('.client-desc').textContent.toLowerCase();
-                    const status = card.querySelector('.status-badge') ? card.querySelector('.status-badge').textContent.toLowerCase() : '';
-                    const tags = Array.from(card.querySelectorAll('.tag-badge')).map(tag => tag.textContent.toLowerCase()).join(' ');
-                    
+            const platformFilterValue = platformFilter ? platformFilter.value.toLowerCase() : '';
+            
+            document.querySelectorAll('.repo-card').forEach(card => {
+                const name = card.querySelector('.repo-name').textContent.toLowerCase();
+                const desc = card.querySelector('.client-desc').textContent.toLowerCase();
+                const status = card.querySelector('.status-badge') ? card.querySelector('.status-badge').textContent.toLowerCase() : '';
+                const tags = Array.from(card.querySelectorAll('.tag-badge')).map(tag => tag.textContent.toLowerCase()).join(' ');
+                
+                let showCard = true;
+                
+                // Apply search filter
+                if (searchTerm) {
                     const searchableContent = `${name} ${desc} ${status} ${tags}`;
-                    card.style.display = searchableContent.includes(searchTerm) ? 'flex' : 'none';
-                 });
-            }
+                    showCard = searchableContent.includes(searchTerm);
+                }
+                
+                // Apply platform filter
+                if (showCard && platformFilterValue) {
+                    showCard = tags.includes(platformFilterValue);
+                }
+                
+                card.style.display = showCard ? 'flex' : 'none';
+            });
         }
 
         function createClientCard(clientData, container) {
@@ -533,6 +566,8 @@
                     '<span class="status-badge actively-maintained">Actively Maintained</span>' : 
                     clientData.status === 'still-in-development' ? 
                     '<span class="status-badge still-in-development">Still in Development</span>' :
+                    clientData.status === 'broken' ?
+                    '<span class="status-badge broken">Broken</span>' :
                     '<span class="status-badge discontinued">Discontinued</span>') : '';
 
             card.innerHTML = `
@@ -710,19 +745,8 @@
         }
 
         const searchInput = document.getElementById('search-input');
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('.repo-card');
-            
-            cards.forEach(card => {
-                const name = card.querySelector('.repo-name').textContent.toLowerCase();
-                const desc = card.querySelector('.client-desc').textContent.toLowerCase();
-                const status = card.querySelector('.status-badge') ? card.querySelector('.status-badge').textContent.toLowerCase() : '';
-                const tags = Array.from(card.querySelectorAll('.tag-badge')).map(tag => tag.textContent.toLowerCase()).join(' ');
-                
-                const searchableContent = `${name} ${desc} ${status} ${tags}`;
-                card.style.display = searchableContent.includes(searchTerm) ? 'flex' : 'none';
-            });
+        searchInput.addEventListener('input', () => {
+            applyFilters();
         });
     </script>
 </body>

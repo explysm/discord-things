@@ -375,6 +375,19 @@ button {
     border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
+.status-badge.broken {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    position: relative;
+}
+
+.status-badge.broken::before {
+    content: '⚠️';
+    margin-right: 4px;
+    font-size: 0.8em;
+}
+
 /* Card Actions */
 .repo-meta {
     margin-top: auto;
