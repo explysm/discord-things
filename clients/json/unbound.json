@@ -1,0 +1,11 @@
+{
+  "name": "Unbound",
+  "desc": "Cross-platform client modification for discord on mobile",
+  "link": "https://www.unbound.rip/",
+  "iconUrl": "",
+  "status": "still-in-development",
+  "tags": [
+    "mobile",
+    "android"
+  ]
+}
