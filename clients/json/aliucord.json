@@ -1,0 +1,11 @@
+{
+  "name": "Aliucord",
+  "desc": "A mod for the Discord Android app.",
+  "link": "https://github.com/Aliucord/Aliucord",
+  "iconUrl": "https://avatars.githubusercontent.com/u/78881422?s=48&v=4",
+  "status": "actively-maintained",
+  "tags": [
+    "mobile",
+    "android"
+  ]
+}
