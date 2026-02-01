@@ -142,6 +142,7 @@
                 <select id="client-status" class="modal-input">
                     <option value="">Select Status</option>
                     <option value="actively-maintained">Actively Maintained</option>
+                    <option value="still-in-development">Still in Development</option>
                     <option value="discontinued">Discontinued</option>
                 </select>
 
@@ -530,6 +531,8 @@
             const statusBadge = clientData.status ? 
                 (clientData.status === 'actively-maintained' ? 
                     '<span class="status-badge actively-maintained">Actively Maintained</span>' : 
+                    clientData.status === 'still-in-development' ? 
+                    '<span class="status-badge still-in-development">Still in Development</span>' :
                     '<span class="status-badge discontinued">Discontinued</span>') : '';
 
             card.innerHTML = `
