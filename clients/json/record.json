@@ -1,0 +1,11 @@
+{
+  "name": "ReCord",
+  "desc": "A work-in-progress Discord mod, inspired by mods such as Bunny and Revenge, aimed at being lightweight and user friendly.",
+  "link": "https://github.com/record-mod/record-bundle",
+  "iconUrl": "https://avatars.githubusercontent.com/u/250988821?s=48&v=4",
+  "status": "still-in-development",
+  "tags": [
+    "mobile",
+    "android"
+  ]
+}
