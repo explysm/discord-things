@@ -13,13 +13,26 @@
 
     <div class="container">
         <header>
-            <h1><a href="../main/index.html" style="text-decoration: none; color: inherit;">Discord Things</a> / Plugins</h1>
+            <h1><a href="../index.html" style="text-decoration: none; color: inherit;">Discord Things</a> / Plugins</h1>
             <p>Vendetta & Revenge Plugins</p>
 
-            <div id="fonts-view-controls">
+            <div id="plugins-view-controls">
                 <div class="search-container">
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" id="search-input" placeholder="Find a plugin...">
+                </div>
+                
+                <div class="toolbar">
+                    <select id="sort-select" class="modal-input">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="az">Name (A-Z)</option>
+                        <option value="za">Name (Z-A)</option>
+                    </select>
+
+                    <button id="refetch-btn" class="btn-secondary" title="Refetch Plugins">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                 </div>
             </div>
         </header>
@@ -35,17 +48,96 @@
                 <a href="https://github.com/explysm/discord-things" target="_blank" class="btn-copy">
                     <i class="fab fa-github"></i> View Repository
                 </a>
+                <button id="settings-btn" class="btn-copy">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
             </div>
             <p>Powered by GitHub API</p>
         </footer>
     </div>
 
+    <button id="add-plugin-btn" class="fab-btn" style="display: none;">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Enter your GitHub Personal Access Token to manage plugins. <br><small style="color: var(--secondary-text); font-style: italic;">*only if you have access to manage the repo</small></p>
+                <input type="password" id="github-token" placeholder="ghp_..." class="modal-input">
+                <div id="login-msg" class="status-msg"></div>
+                
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 500;">Appearance</span>
+                    <button id="theme-toggle-btn" class="btn-secondary" style="width: auto;">
+                        <i class="fas fa-moon"></i> <span>Dark Mode</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="logout-btn" class="btn-secondary" style="display: none;">Log Out</button>
+                <button id="login-submit" class="btn-primary">Log In</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="upload-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Plugin</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label class="input-label">Plugin Name</label>
+                <input type="text" id="plugin-name" class="modal-input" placeholder="Plugin Name">
+                
+                <label class="input-label" style="margin-top: 1rem;">Description</label>
+                <textarea id="plugin-desc" class="modal-input" placeholder="A brief description of the plugin." style="height: 100px; resize: vertical; padding-top: 10px;"></textarea>
+
+                <label class="input-label" style="margin-top: 1rem;">Plugin URL</label>
+                <input type="url" id="plugin-url" class="modal-input" placeholder="https://example.com/plugin.js">
+
+                <div id="publish-status" class="status-msg"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="publish-btn" class="btn-primary">Publish Plugin</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Plugin JSON</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="small-text">Modify the JSON definition directly.</p>
+                <textarea id="edit-json-editor" class="code-editor"></textarea>
+                <div id="edit-status" class="status-msg"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="save-edit-btn" class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const REPO_OWNER = 'explysm';
         const REPO_NAME = 'discord-things';
-        const CONTENTS_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/plugins`;
+        const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/plugins`;
+        const CACHE_KEY = 'discord_things_plugins_cache';
+        const CACHE_DURATION = 1000 * 60 * 10; // 10 minutes
         
-        // Helper: Toast
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -64,116 +156,504 @@
             }, 3000);
         }
 
-        // Helper: Copy
-        function copyToClipboard(text, btnElement) {
+        // Copy to clipboard function
+        function copyToClipboard(text) {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).then(() => {
-                    showToast('Copied to clipboard!', 'success');
+                    showToast('URL copied to clipboard!', 'success');
                 }).catch(err => {
                     console.error(err);
                     showToast('Failed to copy', 'error');
                 });
             } else {
-                // Fallback
                 const ta = document.createElement('textarea');
                 ta.value = text;
                 document.body.appendChild(ta);
                 ta.select();
                 document.execCommand('copy');
                 document.body.removeChild(ta);
-                showToast('Copied to clipboard!', 'success');
+                showToast('URL copied to clipboard!', 'success');
             }
         }
 
-        async function fetchPlugins() {
-            const container = document.getElementById('repo-container');
-            
-            try {
-                const response = await fetch(CONTENTS_URL);
-                if (!response.ok) throw new Error('Failed to fetch plugin list');
-                
-                const items = await response.json();
-                const pluginDirs = items.filter(item => item.type === 'dir');
-                
-                container.innerHTML = '';
-                
-                if (pluginDirs.length === 0) {
-                    container.innerHTML = '<div class="loading">No plugins found.</div>';
-                    return;
-                }
+        let GITHUB_TOKEN = localStorage.getItem('gh_token');
+        let currentSort = 'newest';
+        let globalPluginData = [];
 
-                for (const dir of pluginDirs) {
-                    await createPluginCard(dir, container);
+        // DOM Elements
+        const settingsBtn = document.getElementById('settings-btn');
+        const loginModal = document.getElementById('login-modal');
+        const uploadModal = document.getElementById('upload-modal');
+        const editModal = document.getElementById('edit-modal');
+        
+        const sortSelect = document.getElementById('sort-select');
+        const refetchBtn = document.getElementById('refetch-btn');
+        const addPluginBtn = document.getElementById('add-plugin-btn');
+        
+        const tokenInput = document.getElementById('github-token');
+        const loginSubmit = document.getElementById('login-submit');
+        const logoutBtn = document.getElementById('logout-btn');
+        const loginMsg = document.getElementById('login-msg');
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        
+        // Theme Logic
+        let isLightMode = localStorage.getItem('discord_things_theme') === 'light';
+        
+        function updateTheme() {
+            if (isLightMode) {
+                document.body.classList.add('light-mode');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> <span>Light Mode</span>';
+            } else {
+                document.body.classList.remove('light-mode');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i> <span>Dark Mode</span>';
+            }
+            localStorage.setItem('discord_things_theme', isLightMode ? 'light' : 'dark');
+        }
+        
+        updateTheme();
+        
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                isLightMode = !isLightMode;
+                updateTheme();
+            });
+        }
+        
+        checkAuth();
+        fetchPlugins();
+        
+        if (sortSelect) {
+            sortSelect.addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                if(globalPluginData.length > 0) renderPluginList(globalPluginData);
+            });
+        }
+
+        if (refetchBtn) {
+            refetchBtn.addEventListener('click', () => {
+                const icon = refetchBtn.querySelector('i');
+                icon.classList.add('fa-spin');
+                fetchPlugins(true).then(() => {
+                    setTimeout(() => icon.classList.remove('fa-spin'), 500);
+                });
+            });
+        }
+
+        // Event Listeners for Modals
+        settingsBtn.addEventListener('click', () => openModal(loginModal));
+        addPluginBtn.addEventListener('click', () => {
+            resetUploadForm();
+            openModal(uploadModal);
+        });
+
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', (e) => closeModal(e.target.closest('.modal-overlay')));
+        });
+
+        window.onclick = (event) => {
+            if (event.target.classList.contains('modal-overlay')) {
+                closeModal(event.target);
+            }
+        };
+
+        function openModal(modal) {
+            modal.style.display = 'flex';
+            modal.style.opacity = 1;
+        }
+
+        function closeModal(modal) {
+            modal.style.opacity = 0;
+            setTimeout(() => modal.style.display = 'none', 200);
+        }
+
+        // Login functionality
+        loginSubmit.addEventListener('click', async () => {
+            const token = tokenInput.value.trim();
+            if (!token) return;
+
+            loginMsg.textContent = 'Verifying...';
+            loginMsg.style.color = 'var(--secondary-text)';
+
+            try {
+                const response = await fetch('https://api.github.com/user', {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                if (response.ok) {
+                    const repoRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, { 
+                        headers: { 'Authorization': `token ${token}` } 
+                    });
+                    if (repoRes.ok) {
+                        const repoData = await repoRes.json();
+                        if (!repoData.permissions.push) throw new Error('You do not have write access to this repository.');
+                        
+                        localStorage.setItem('gh_token', token);
+                        GITHUB_TOKEN = token;
+                        checkAuth();
+                        closeModal(loginModal);
+                        showToast('Logged in successfully!', 'success');
+                    } else {
+                        throw new Error('Could not access repository info.');
+                    }
+                } else {
+                    throw new Error('Invalid token.');
                 }
+            } catch (err) {
+                loginMsg.textContent = err.message;
+                loginMsg.style.color = 'var(--error)';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('gh_token');
+            GITHUB_TOKEN = null;
+            checkAuth();
+            loginMsg.textContent = 'Logged out.';
+        });
+
+        // Upload functionality
+        const publishBtn = document.getElementById('publish-btn');
+        const publishStatus = document.getElementById('publish-status');
+
+        function resetUploadForm() {
+            document.getElementById('plugin-name').value = '';
+            document.getElementById('plugin-desc').value = '';
+            document.getElementById('plugin-url').value = '';
+            publishStatus.textContent = '';
+            publishBtn.disabled = false;
+        }
+
+        publishBtn.addEventListener('click', async () => {
+            const name = document.getElementById('plugin-name').value.trim();
+            const desc = document.getElementById('plugin-desc').value.trim();
+            const url = document.getElementById('plugin-url').value.trim();
+
+            if (!name || !url) {
+                publishStatus.textContent = 'Name and URL are required.';
+                publishStatus.style.color = 'var(--error)';
+                return;
+            }
+
+            publishStatus.textContent = 'Publishing plugin...';
+            publishStatus.style.color = 'var(--accent-color)';
+            publishBtn.disabled = true;
+
+            try {
+                const safeName = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                const pluginJson = { name, description: desc, url };
+                const jsonPath = `plugins/${safeName}.json`;
+                const jsonContent = btoa(unescape(encodeURIComponent(JSON.stringify(pluginJson, null, 2))));
+                
+                await githubUpload(jsonPath, jsonContent, `Add plugin: ${name}`);
+
+                closeModal(uploadModal);
+                showToast('Plugin published successfully!', 'success');
+                fetchPlugins(true);
 
             } catch (err) {
                 console.error(err);
-                container.innerHTML = `<div class="loading" style="color: var(--error)">Error: ${err.message}</div>`;
+                publishStatus.textContent = `Error: ${err.message}`;
+                publishStatus.style.color = 'var(--error)';
+            } finally {
+                publishBtn.disabled = false;
+            }
+        });
+
+        async function githubUpload(path, contentBase64, message) {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+            let sha = await getFileSha(path);
+
+            const body = { message, content: contentBase64 };
+            if (sha) body.sha = sha;
+
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `token ${GITHUB_TOKEN}`, 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Upload failed');
             }
         }
 
-        async function createPluginCard(dir, container) {
-            const manifestUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/plugins/${dir.name}/manifest.json`;
-            const pluginUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/plugins/${dir.name}/`;
-            
-            let manifest = { name: dir.name, description: 'No manifest found.', authors: [] };
-            
+        async function getFileSha(path) {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+            const headers = { 'Authorization': `token ${GITHUB_TOKEN}` };
             try {
-                const res = await fetch(manifestUrl);
+                const res = await fetch(url, { headers });
                 if (res.ok) {
-                    manifest = await res.json();
+                    const data = await res.json();
+                    return data.sha;
                 }
-            } catch (e) {
-                console.warn(`Could not load manifest for ${dir.name}`);
-            }
+            } catch (e) {}
+            return null;
+        }
 
+        // Fetch plugins
+        async function fetchPlugins(forceRefresh = false) {
+            const container = document.getElementById('repo-container');
+            
+            if (!forceRefresh) {
+                const cached = localStorage.getItem(CACHE_KEY);
+                if (cached) {
+                    try {
+                        const { timestamp, data } = JSON.parse(cached);
+                        if (Date.now() - timestamp < CACHE_DURATION) {
+                            globalPluginData = data;
+                            renderPluginList(data);
+                            return;
+                        }
+                    } catch (e) {
+                         console.error("Cache parse error", e);
+                         localStorage.removeItem(CACHE_KEY);
+                    }
+                }
+            }
+            
+            container.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading plugins...</div>`;
+
+            try {
+                const headers = {};
+                if (GITHUB_TOKEN) headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+
+                const response = await fetch(API_URL, { headers });
+                if (!response.ok) throw new Error(`GitHub API Error: ${response.statusText}`);
+                
+                const files = (await response.json()).filter(file => file.name.endsWith('.json'));
+
+                if (files.length === 0) {
+                    container.innerHTML = '<div class="error">No plugins found.</div>';
+                    return;
+                }
+
+                const pluginPromises = files.map(async file => {
+                    try {
+                        const fileRes = await fetch(file.download_url);
+                        const pluginData = await fileRes.json();
+                        return { 
+                            ...pluginData, 
+                            jsonPath: file.path, 
+                            jsonSha: file.sha,
+                            githubUrl: file.html_url
+                        };
+                    } catch (e) {
+                        console.error('Error fetching plugin json:', file.name, e);
+                        return null;
+                    }
+                });
+
+                const plugins = (await Promise.all(pluginPromises)).filter(p => p !== null);
+
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ 
+                    timestamp: Date.now(), 
+                    data: plugins 
+                }));
+                globalPluginData = plugins;
+                renderPluginList(plugins);
+
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = `<div class="error">Failed to load plugins: ${error.message}</div>`;
+            }
+        }
+
+        function renderPluginList(plugins) {
+            const container = document.getElementById('repo-container');
+            container.innerHTML = '';
+            
+            let sortedPlugins = [...plugins];
+            if (currentSort === 'az') sortedPlugins.sort((a, b) => a.name.localeCompare(b.name));
+            else if (currentSort === 'za') sortedPlugins.sort((a, b) => b.name.localeCompare(a.name));
+            else if (currentSort === 'oldest') sortedPlugins.reverse();
+            
+            sortedPlugins.forEach(plugin => createPluginCard(plugin, container));
+            checkAuth();
+            
+            // Re-apply search filter
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            if (searchTerm) {
+                 document.querySelectorAll('.repo-card').forEach(card => {
+                    const name = card.querySelector('.repo-name').textContent.toLowerCase();
+                    const desc = card.querySelector('.plugin-desc').textContent.toLowerCase();
+                    card.style.display = (name.includes(searchTerm) || desc.includes(searchTerm)) ? 'flex' : 'none';
+                 });
+            }
+        }
+
+        function createPluginCard(pluginData, container) {
             const card = document.createElement('div');
             card.className = 'repo-card';
             
-            const authorText = manifest.authors ? manifest.authors.map(a => a.name).join(', ') : 'Unknown';
+            const deleteBtnId = `del-${Math.random().toString(36).substr(2, 9)}`;
+            const editBtnId = `edit-${Math.random().toString(36).substr(2, 9)}`;
+            const copyBtnId = `copy-${Math.random().toString(36).substr(2, 9)}`;
             
-            const btnId = `copy-${Math.random().toString(36).substr(2, 9)}`;
-
             card.innerHTML = `
                 <div class="repo-header">
-                    <span class="repo-name" style="font-size: 1.25rem;">${manifest.name}</span>
+                    <span class="repo-name">${pluginData.name}</span>
                     <span style="font-size: 0.8rem; color: var(--secondary-text); border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 12px;">Plugin</span>
                 </div>
                 
                 <div style="flex: 1; margin-bottom: 1.5rem;">
-                    <p style="margin-bottom: 0.5rem; color: var(--text-color);">${manifest.description}</p>
-                    <p style="font-size: 0.85rem; color: var(--secondary-text);"><i class="fas fa-user"></i> ${authorText}</p>
+                    <p class="plugin-desc" style="color: var(--text-color);">${pluginData.description || 'No description provided.'}</p>
                 </div>
 
                 <div class="repo-meta">
-                    <button id="${btnId}" class="btn-primary" style="flex: 1; color: black;">
-                        <i class="fas fa-link"></i> Copy Link
+                    <button id="${copyBtnId}" class="btn-primary" style="flex: 1; color: black;" title="Copy Plugin URL">
+                        <i class="fas fa-link"></i> Copy URL
                     </button>
-                    <a href="${dir.html_url}" target="_blank" class="btn-copy">
-                        <i class="fab fa-github"></i> Source
+                    <a href="${pluginData.url}" target="_blank" class="btn-copy" title="Visit Plugin">
+                        <i class="fas fa-external-link-alt"></i> Visit
                     </a>
+                    <button id="${editBtnId}" class="btn-copy btn-delete" style="display: none;" title="Edit JSON">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button id="${deleteBtnId}" class="btn-copy btn-delete" style="display: none; color: #f85149;" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
             `;
             
             container.appendChild(card);
-            
-            document.getElementById(btnId).addEventListener('click', () => {
-                copyToClipboard(pluginUrl);
+
+            document.getElementById(copyBtnId).addEventListener('click', () => {
+                copyToClipboard(pluginData.url);
             });
+            
+            document.getElementById(deleteBtnId).onclick = (e) => { e.preventDefault(); deletePlugin(pluginData); };
+            document.getElementById(editBtnId).onclick = (e) => { e.preventDefault(); openEditModal(pluginData); };
+        }
+        
+        // Edit functionality
+        const editJsonEditor = document.getElementById('edit-json-editor');
+        const saveEditBtn = document.getElementById('save-edit-btn');
+        const editStatus = document.getElementById('edit-status');
+        let currentEditingPlugin = null;
+
+        function openEditModal(pluginData) {
+            currentEditingPlugin = pluginData;
+            const cleanData = { ...pluginData };
+            delete cleanData.jsonPath;
+            delete cleanData.jsonSha;
+            delete cleanData.githubUrl;
+            
+            editJsonEditor.value = JSON.stringify(cleanData, null, 2);
+            editStatus.textContent = '';
+            openModal(editModal);
         }
 
-        // Search
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            document.querySelectorAll('.repo-card').forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(term) ? 'flex' : 'none';
-            });
+        saveEditBtn.addEventListener('click', async () => {
+             if (!currentEditingPlugin) return;
+             const content = editJsonEditor.value;
+             let jsonData;
+             try {
+                 jsonData = JSON.parse(content);
+             } catch(e) {
+                 editStatus.textContent = "Invalid JSON";
+                 editStatus.style.color = 'var(--error)';
+                 return;
+             }
+             
+             saveEditBtn.disabled = true;
+             editStatus.textContent = "Saving...";
+             editStatus.style.color = 'var(--accent-color)';
+             
+             try {
+                const safeName = jsonData.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                const newPath = `plugins/${safeName}.json`;
+
+                // If name changes, we need to delete old file
+                if (currentEditingPlugin.jsonPath !== newPath) {
+                    await githubDelete(currentEditingPlugin.jsonPath, currentEditingPlugin.jsonSha, `Rename plugin: ${currentEditingPlugin.name} to ${jsonData.name}`);
+                }
+
+                const base64Content = btoa(unescape(encodeURIComponent(content)));
+                await githubUpload(newPath, base64Content, `Update plugin: ${jsonData.name}`);
+                 
+                 closeModal(editModal);
+                 showToast('Plugin updated successfully!', 'success');
+                 fetchPlugins(true);
+             } catch(e) {
+                 console.error(e);
+                 editStatus.textContent = `Error: ${e.message}`;
+                 editStatus.style.color = 'var(--error)';
+             } finally {
+                 saveEditBtn.disabled = false;
+             }
         });
 
-        // Init
-        fetchPlugins();
+        async function deletePlugin(pluginData) {
+            if (!confirm(`Are you sure you want to delete "${pluginData.name}"?`)) return;
+            
+            try {
+                showToast('Deleting plugin...', 'info');
+                await githubDelete(pluginData.jsonPath, pluginData.jsonSha, `Delete plugin: ${pluginData.name}`);
 
+                showToast('Plugin deleted successfully.', 'success');
+                fetchPlugins(true);
+
+            } catch (err) {
+                console.error(err);
+                showToast(`Error deleting plugin: ${err.message}`, 'error');
+            }
+        }
+
+        async function githubDelete(path, sha, message) {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: { 
+                    'Authorization': `token ${GITHUB_TOKEN}`, 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({ message, sha })
+            });
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Delete failed');
+            }
+        }
+
+        function checkAuth() {
+            if (GITHUB_TOKEN) {
+                if (addPluginBtn) addPluginBtn.style.display = 'flex';
+                if (tokenInput) tokenInput.style.display = 'none';
+                if (loginSubmit) loginSubmit.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'block';
+                if (loginMsg) {
+                    loginMsg.textContent = 'You are logged in.';
+                    loginMsg.style.color = '#2ea043';
+                }
+                document.querySelectorAll('.btn-delete').forEach(el => el.style.display = 'inline-flex');
+            } else {
+                if (addPluginBtn) addPluginBtn.style.display = 'none';
+                if (tokenInput) tokenInput.style.display = 'block';
+                if (loginSubmit) loginSubmit.style.display = 'block';
+                if (logoutBtn) logoutBtn.style.display = 'none';
+                if (loginMsg) {
+                    loginMsg.textContent = '';
+                    tokenInput.value = '';
+                }
+                document.querySelectorAll('.btn-delete').forEach(el => el.style.display = 'none');
+            }
+        }
+
+        // Search functionality
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.repo-card');
+            
+            cards.forEach(card => {
+                const name = card.querySelector('.repo-name').textContent.toLowerCase();
+                const desc = card.querySelector('.plugin-desc').textContent.toLowerCase();
+                card.style.display = (name.includes(searchTerm) || desc.includes(searchTerm)) ? 'flex' : 'none';
+            });
+        });
     </script>
 </body>
 </html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide to Create Your Own Fonts - Discord Things</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><a href="index.html" style="text-decoration: none; color: inherit;">Discord Things</a> / Guide</h1>
+            <p>How to Create Your Own Fonts</p>
+        </header>
+
+        <main class="guide-content">
+            <section class="guide-section">
+                <h2><i class="fas fa-font"></i> How to Create Your Own Font Pack</h2>
+                <p>This guide shows you how to create custom font packs for Discord mobile mod clients using pre-made fonts.</p>
+            </section>
+
+            <section class="guide-section">
+                <h2><i class="fas fa-link"></i> Step 1: Get Your Raw Font Links</h2>
+                <div class="guide-step">
+                    <h3>Option A: Direct Download Link</h3>
+                    <p>If you got the font from a website, copy the direct download link.</p>
+                </div>
+                <div class="guide-step">
+                    <h3>Option B: Upload to File Hosting</h3>
+                    <p>Download the font file and upload it to one of these services:</p>
+                    <ul>
+                        <li><strong>Catbox.moe:</strong> Free file hosting for TTF files</li>
+                        <li><strong>GitHub:</strong> Upload to a GitHub repository and use raw link</li>
+                        <li><strong>Google Drive:</strong> Set file to public and get direct link</li>
+                        <li><strong>Dropbox:</strong> Generate public share link</li>
+                    </ul>
+                    <p><strong>Note:</strong> Make sure the links end in <code>.ttf</code> and are directly accessible.</p>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h2><i class="fas fa-code"></i> Step 2: Create Your JSON File</h2>
+                <div class="guide-step">
+                    <h3>Create a file named "<fontpack name>.json"</h3>
+                    <p>Replace all placeholder values (text inside <code>""</code>) with your font information:</p>
+                </div>
+
+                <div class="code-example">{
+  "spec": 1,
+  "name": "Font Pack Name"",
+  "previewText": "Preview text",
+  "main": {
+    "ggsans-Normal": "Normal Font Link",
+    "ggsans-Bold": "Bold Font Link",
+    "ggsans-Medium": "medium font link",
+    "ggsans-Semibold": "semibold font link",
+    "ggsans-ExtraBold": "extrabold font link",
+    "ggsans-NormalItalic": "normal italic font link",
+    "ggsans-BoldItalic": "bold italic font link",
+    "ggsans-MediumItalic": "medium italic font link",
+    "ggsans-SemiboldItalic": "semibold italic font link",
+    "ggsans-ExtraBoldItalic": "extrabold italic font link",
+    "NotoSans-Normal": "noto normal link",
+    "NotoSans-Bold": "noto bold link"",
+    "NotoSans-Medium": "noto medium link",
+    "NotoSans-Semibold": "noto semibold link",
+    "NotoSans-ExtraBold": "noto extrabold link",
+    "ABCGintoNord-ExtraBold": "abcginto link",
+    "SourceCodePro-Semibold": "sourcecodepro link"
+  }
+}</div>
+
+                <div class="guide-step">
+                    <h3>What If I Don't Have All Font Variants?</h3>
+                    <p>No problem! If you don't have a specific font variant, you can:</p>
+                    <ul>
+                        <li><strong>Reuse existing variants:</strong> Use the same link for similar weights</li>
+                        <li><strong>Use closest available:</strong> For "Medium" you might use "Normal"</li>
+                        <li><strong>Remove unused keys:</strong> Simply delete lines you don't need</li>
+                        <li><strong>Use different font links:</strong> You can use different fonts for missing variants, or create a whole new font pack that includes the missing variants.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h2><i class="fas fa-upload"></i> Step 3: Upload Your JSON File</h2>
+                <div class="guide-step">
+                    <h3>Upload to a File Hosting Service</h3>
+                    <p>Upload your completed JSON file to any of these services:</p>
+                    <ul>
+                        <li><strong>Catbox.moe:</strong> Recommended - free and reliable</li>
+                        <li><strong>GitHub:</strong> Upload as a file in a repository</li>
+                        <li><strong>PasteBin:</strong> Use "Paste" and set to unlisted</li>
+                        <li><strong>Any public file host:</strong> As long as it provides a direct link</li>
+                    </ul>
+                    <p><strong>Important:</strong> Make sure you get the direct raw link to your JSON file.</p>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h2><i class="fas fa-mobile-alt"></i> Step 4: Import Font in Discord Mobile</h2>
+                <div class="guide-step">
+                    <h3>Import Steps for Any Mod Client:</h3>
+                    <ol>
+                        <li>Open your Discord mobile mod client</li>
+                        <li>Go to <strong>Font Settings</strong></li>
+                        <li>Press the <strong>plus (+)</strong> button</li>
+                        <li>Select <strong>Import from link</strong></li>
+                        <li>Paste your JSON file link</li>
+                        <li>Press <strong>Import</strong></li>
+                        <li>Scroll down and press <strong>Import</strong> again to confirm</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h2><i class="fas fa-tools"></i> Font Design (Optional)</h2>
+                <p>If you want to create your own fonts instead of using pre-made ones:</p>
+                <div class="guide-step">
+                    <h3>Font Creation Tools</h3>
+                    <ul>
+                        <li><strong>FontForge:</strong> Free, open-source font editor</li>
+                        <li><strong>Glyphs:</strong> Professional font editor (Mac)</li>
+                        <li><strong>RoboFont:</strong> Professional font creation tool</li>
+                        <li><strong>Adobe Illustrator:</strong> With font export plugins</li>
+                    </ul>
+                </div>
+                <div class="guide-step">
+                    <h3>Export Requirements</h3>
+                    <ul>
+                        <li>Export in TTF format</li>
+                        <li>Include basic Latin alphabet (A-Z, a-z)</li>
+                        <li>Include numbers (0-9) and punctuation</li>
+                        <li>Test before using</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h2><i class="fas fa-exclamation-triangle"></i> Common Issues</h2>
+                <div class="guide-troubleshooting">
+                    <div class="issue-item">
+                        <h4>"Invalid JSON" Error</h4>
+                        <p><strong>Cause:</strong> JSON syntax error or missing quotes/commas</p>
+                        <p><strong>Solution:</strong> Use a JSON validator like jsonlint.com to check your file</p>
+                    </div>
+
+                    <div class="issue-item">
+                        <h4>"Font Not Loading"</h4>
+                        <p><strong>Cause:</strong> Broken font link or wrong file format</p>
+                        <p><strong>Solution:</strong> Test all font links in browser first</p>
+                    </div>
+
+                    <div class="issue-item">
+                        <h4>"Import Failed"</h4>
+                        <p><strong>Cause:</strong> JSON link not accessible or expired</p>
+                        <p><strong>Solution:</strong> Use a reliable file host like Catbox.moe</p>
+                    </div>
+
+                    <div class="issue-item">
+                        <h4>Font Looks Wrong</h4>
+                        <p><strong>Cause:</strong> Wrong font variant mapped to wrong key</p>
+                        <p><strong>Solution:</strong> Double-check your JSON mappings</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h2><i class="fas fa-lightbulb"></i> Pro Tips</h2>
+                <div class="guide-tips">
+                    <div class="tip-card">
+                        <h4><i class="fas fa-link"></i> Test Links First</h4>
+                        <p>Always test your font and JSON links in a browser before importing.</p>
+                    </div>
+
+                    <div class="tip-card">
+                        <h4><i class="fas fa-copy"></i> Backup Your JSON</h4>
+                        <p>Keep a copy of your JSON file locally for easy editing.</p>
+                    </div>
+
+                    <div class="tip-card">
+                        <h4><i class="fas fa-eye"></i> Preview Text</h4>
+                        <p>Use meaningful preview text that shows off your font's style.</p>
+                    </div>
+
+                    <div class="tip-card">
+                        <h4><i class="fas fa-shield-alt"></i> Font License</h4>
+                        <p>Only use fonts you have permission to redistribute.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="guide-actions">
+                <a href="index.html" class="btn-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Fonts
+                </a>
+                <a href="https://github.com/explysm/discord-things" target="_blank" class="btn-secondary">
+                    <i class="fab fa-github"></i> View Repository
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .guide-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .guide-section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .guide-section h2 {
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .guide-step {
+            margin-bottom: 2rem;
+            padding-left: 1rem;
+        }
+
+        .guide-step h3 {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .guide-list ul, .guide-step ul, .guide-step ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .guide-list li, .guide-step li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .code-example {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .guide-code-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .guide-code-section code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .guide-tips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .tip-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .tip-card h4 {
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .guide-troubleshooting {
+            margin-top: 1.5rem;
+        }
+
+        .issue-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .issue-item h4 {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .issue-item p {
+            margin: 0.25rem 0;
+            font-size: 0.9rem;
+        }
+
+        .issue-item p strong {
+            color: var(--accent-color);
+        }
+
+        .guide-help ul {
+            margin: 1rem 0;
+        }
+
+        .guide-help a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .guide-help a:hover {
+            text-decoration: underline;
+        }
+
+        .guide-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .guide-content {
+                padding: 1rem;
+            }
+
+            .guide-section {
+                padding: 1.5rem;
+            }
+
+            .guide-tips {
+                grid-template-columns: 1fr;
+            }
+
+            .guide-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .guide-actions .btn-primary,
+            .guide-actions .btn-secondary {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</body>
+</html>

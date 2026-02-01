@@ -121,7 +121,29 @@
                 <input type="url" id="client-link" class="modal-input" placeholder="https://example.com">
 
                 <label class="input-label" style="margin-top: 1rem;">Icon (Optional)</label>
-                <input type="file" id="client-icon-file" class="modal-input" accept="image/*">
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <button type="button" id="icon-file-btn" class="btn-secondary" style="flex: 1; background: var(--accent-color); color: black;">
+                        <i class="fas fa-upload"></i> Upload File
+                    </button>
+                    <button type="button" id="icon-url-btn" class="btn-secondary" style="flex: 1;">
+                        <i class="fas fa-link"></i> Use URL
+                    </button>
+                </div>
+                
+                <div id="icon-file-section">
+                    <input type="file" id="client-icon-file" class="modal-input" accept="image/*">
+                </div>
+                
+                <div id="icon-url-section" style="display: none;">
+                    <input type="url" id="client-icon-url" class="modal-input" placeholder="https://example.com/icon.png">
+                </div>
+
+                <label class="input-label" style="margin-top: 1rem;">Status</label>
+                <select id="client-status" class="modal-input">
+                    <option value="">Select Status</option>
+                    <option value="actively-maintained">Actively Maintained</option>
+                    <option value="discontinued">Discontinued</option>
+                </select>
 
                 <label class="input-label" style="margin-top: 1rem;">Tags (comma-separated)</label>
                 <input type="text" id="client-tags" class="modal-input" placeholder="e.g. mobile, pc, linux">
@@ -233,6 +255,28 @@
             btn.addEventListener('click', (e) => closeModal(e.target.closest('.modal-overlay')));
         });
 
+        // Icon upload mode switch
+        const iconFileBtn = document.getElementById('icon-file-btn');
+        const iconUrlBtn = document.getElementById('icon-url-btn');
+
+        iconFileBtn.addEventListener('click', () => {
+            document.getElementById('icon-file-section').style.display = 'block';
+            document.getElementById('icon-url-section').style.display = 'none';
+            iconFileBtn.style.background = 'var(--accent-color)';
+            iconFileBtn.style.color = 'black';
+            iconUrlBtn.style.background = 'rgba(255, 255, 255, 0.05)';
+            iconUrlBtn.style.color = 'var(--text-color)';
+        });
+
+        iconUrlBtn.addEventListener('click', () => {
+            document.getElementById('icon-file-section').style.display = 'none';
+            document.getElementById('icon-url-section').style.display = 'block';
+            iconUrlBtn.style.background = 'var(--accent-color)';
+            iconUrlBtn.style.color = 'black';
+            iconFileBtn.style.background = 'rgba(255, 255, 255, 0.05)';
+            iconFileBtn.style.color = 'var(--text-color)';
+        });
+
         window.onclick = (event) => {
             if (event.target.classList.contains('modal-overlay')) {
                 closeModal(event.target);
@@ -293,8 +337,18 @@
             document.getElementById('client-desc').value = '';
             document.getElementById('client-link').value = '';
             document.getElementById('client-icon-file').value = '';
+            document.getElementById('client-icon-url').value = '';
+            document.getElementById('client-status').value = '';
             publishStatus.textContent = '';
             publishBtn.disabled = false;
+            
+            // Reset icon section to file mode
+            document.getElementById('icon-file-section').style.display = 'block';
+            document.getElementById('icon-url-section').style.display = 'none';
+            document.getElementById('icon-file-btn').style.background = 'var(--accent-color)';
+            document.getElementById('icon-file-btn').style.color = 'black';
+            document.getElementById('icon-url-btn').style.background = 'rgba(255, 255, 255, 0.05)';
+            document.getElementById('icon-url-btn').style.color = 'var(--text-color)';
         }
 
         publishBtn.addEventListener('click', async () => {
@@ -302,6 +356,9 @@
             const desc = document.getElementById('client-desc').value.trim();
             const link = document.getElementById('client-link').value.trim();
             const iconFile = document.getElementById('client-icon-file').files[0];
+            const iconUrlInput = document.getElementById('client-icon-url').value.trim();
+            const statusInput = document.getElementById('client-status').value;
+            const tagsInput = document.getElementById('client-tags').value.trim();
 
             if (!name || !link) {
                 publishStatus.textContent = 'Name and Link are required.';
@@ -316,6 +373,7 @@
             try {
                 let iconUrl = '';
                 const safeName = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
 
                 if (iconFile) {
                     publishStatus.textContent = 'Uploading icon...';
@@ -325,10 +383,12 @@
                     
                     await githubUpload(iconPath, content, `Add icon for client: ${name}`);
                     iconUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${iconPath}`;
+                } else if (iconUrlInput) {
+                    iconUrl = iconUrlInput;
                 }
 
                 publishStatus.textContent = 'Creating JSON definition...';
-                const clientJson = { name, desc, link, iconUrl };
+                const clientJson = { name, desc, link, iconUrl, status: statusInput || null, tags };
                 const jsonPath = `clients/json/${safeName}.json`;
                 const jsonContent = btoa(unescape(encodeURIComponent(JSON.stringify(clientJson, null, 2))));
                 
@@ -450,7 +510,12 @@
             if (searchTerm) {
                  document.querySelectorAll('.repo-card').forEach(card => {
                     const name = card.querySelector('.repo-name').textContent.toLowerCase();
-                    card.style.display = name.includes(searchTerm) ? 'flex' : 'none';
+                    const desc = card.querySelector('.client-desc').textContent.toLowerCase();
+                    const status = card.querySelector('.status-badge') ? card.querySelector('.status-badge').textContent.toLowerCase() : '';
+                    const tags = Array.from(card.querySelectorAll('.tag-badge')).map(tag => tag.textContent.toLowerCase()).join(' ');
+                    
+                    const searchableContent = `${name} ${desc} ${status} ${tags}`;
+                    card.style.display = searchableContent.includes(searchTerm) ? 'flex' : 'none';
                  });
             }
         }
@@ -462,15 +527,26 @@
             const deleteBtnId = `del-${Math.random().toString(36).substr(2, 9)}`;
             const editBtnId = `edit-${Math.random().toString(36).substr(2, 9)}`;
             
+            const statusBadge = clientData.status ? 
+                (clientData.status === 'actively-maintained' ? 
+                    '<span class="status-badge actively-maintained">Actively Maintained</span>' : 
+                    '<span class="status-badge discontinued">Discontinued</span>') : '';
+
             card.innerHTML = `
                 <div class="repo-header">
                     <span class="repo-name">${clientData.name}</span>
+                    ${statusBadge}
                 </div>
 
                 <div class="client-details">
                     ${clientData.iconUrl ? `<img src="${clientData.iconUrl}" alt="${clientData.name} Icon" class="client-icon">` : '<div class="client-icon"></div>'}
                     <div class="client-info">
                          <p class="client-desc">${clientData.desc || 'No description provided.'}</p>
+                         ${clientData.tags && clientData.tags.length > 0 ? `
+                            <div class="tags-container">
+                                ${clientData.tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('')}
+                            </div>
+                         ` : ''}
                     </div>
                 </div>
 
@@ -637,7 +713,12 @@
             
             cards.forEach(card => {
                 const name = card.querySelector('.repo-name').textContent.toLowerCase();
-                card.style.display = name.includes(searchTerm) ? 'flex' : 'none';
+                const desc = card.querySelector('.client-desc').textContent.toLowerCase();
+                const status = card.querySelector('.status-badge') ? card.querySelector('.status-badge').textContent.toLowerCase() : '';
+                const tags = Array.from(card.querySelectorAll('.tag-badge')).map(tag => tag.textContent.toLowerCase()).join(' ');
+                
+                const searchableContent = `${name} ${desc} ${status} ${tags}`;
+                card.style.display = searchableContent.includes(searchTerm) ? 'flex' : 'none';
             });
         });
     </script>
