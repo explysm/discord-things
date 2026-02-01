@@ -1,0 +1,11 @@
+{
+  "name": "Rain",
+  "desc": "A Discord mod for mobile written from the ground up by the creators of Kettu",
+  "link": "https://github.com/ra1ncord/rain",
+  "iconUrl": "https://avatars.githubusercontent.com/u/222484597?s=48&v=4",
+  "status": "still-in-development",
+  "tags": [
+    "mobile",
+    "android"
+  ]
+}
