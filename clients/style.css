@@ -278,13 +278,6 @@ button {
     overflow: hidden;
 }
 
-.repo-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--border-hover);
-    box-shadow: var(--shadow-lg);
-    background: var(--card-hover-bg);
-}
-
 /* Card Header */
 .repo-header {
     display: flex;

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discord Things</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -22,7 +22,11 @@
             text-align: center;
             text-decoration: none;
             color: var(--text-color);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Use the master transition from the main style.css */
+            transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                        transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+                        border-color 0.3s,
+                        background-color 0.3s;
             position: relative;
             overflow: hidden;
             display: flex;
@@ -33,7 +37,7 @@
         }
         
         .portal-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-8px) !important; /* Ensure hover transform overrides scroll animation */
             border-color: var(--accent-color);
             box-shadow: var(--shadow-lg);
             background: var(--card-hover-bg);
@@ -113,5 +117,24 @@
             <p>Powered by GitHub Pages</p>
         </footer>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Animate on Scroll ---
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        // Add a delay based on the item's order
+                        entry.target.style.transitionDelay = `${index * 100}ms`;
+                        entry.target.classList.add('in-view');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.portal-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
 </body>
 </html>

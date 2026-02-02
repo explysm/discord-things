@@ -857,3 +857,138 @@ body.light-mode .loader-ring {
 
 
 }
+
+/* --- Native Mobile Enhancements --- */
+@media (max-width: 600px) {
+    /* Safe Area Padding & Body adjustments */
+    body {
+        /* Add padding for top notch and bottom home bar */
+        padding-top: env(safe-area-inset-top);
+        /* Reserve space for the new bottom nav bar */
+        padding-bottom: calc(75px + env(safe-area-inset-bottom));
+    }
+
+    .container {
+        padding: 1rem;
+    }
+
+    header {
+        margin-bottom: 2rem;
+    }
+
+    header h1 {
+        font-size: 1.75rem;
+    }
+
+    /* Bottom Navigation Bar */
+    .main-navigation {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        border-top: 1px solid var(--border-color);
+        /* Pad to respect safe areas on the sides and bottom */
+        padding: 8px env(safe-area-inset-right) calc(8px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
+        height: auto;
+        z-index: 1000;
+        justify-content: space-around; /* Distribute tabs evenly */
+        
+        /* Overriding desktop styles */
+        display: flex;
+        overflow-x: hidden; /* No horizontal scroll on bottom bar */
+    }
+
+    .tab-btn {
+        flex-direction: column;
+        gap: 2px;
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        flex: 1; /* Allow tabs to grow and fill space */
+        text-align: center;
+    }
+
+    /* Adjust Pill for Bottom Nav */
+    .nav-pill {
+        top: 4px;
+        bottom: 4px;
+        height: auto;
+        border-radius: 10px;
+        z-index: -1; /* Place behind buttons */
+        background: var(--accent-color);
+    }
+    
+    body.light-mode .nav-pill {
+        background: var(--accent-color);
+    }
+    
+    .tab-btn.active {
+        color: #000; /* Black text on active pill */
+    }
+
+    body.light-mode .tab-btn.active {
+        color: #fff; /* White text on active pill */
+    }
+
+    /* Stacked Toolbar */
+    .toolbar {
+        flex-direction: column;
+    }
+
+    .toolbar button, .toolbar select {
+        width: 100%;
+    }
+
+    /* Single Column Grid */
+    #repo-container, #favorites-container {
+        grid-template-columns: 1fr;
+    }
+
+    /* Smaller FAB */
+    .fab-btn {
+        bottom: calc(85px + env(safe-area-inset-bottom)); /* Position above nav bar */
+        right: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+
+    /* Modal & Card Padding */
+    #fonts-view-controls, .modal-content, .repo-card {
+        padding: 1.25rem;
+    }
+
+    .preview-area {
+        font-size: 1.25rem;
+        min-height: 80px;
+    }
+}
+/* --- Liveliness Enhancements (from root) --- */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.repo-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s, background-color 0.3s;
+}
+
+.repo-card.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.repo-card:hover {
+    transform: translateY(-5px) !important; /* Override scroll transform */
+}
+
+.btn-primary:active, .btn-secondary:active, .tab-btn:active, .btn-copy:active, .fab-btn:active {
+    transform: scale(0.95) !important;
+    transition: transform 0.1s;
+}

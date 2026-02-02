@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Discord Things - Font Viewer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -647,7 +647,7 @@
             keyMapContainer.innerHTML = '';
             
             // Create options HTML once
-            let optionsHtml = '<option value="">(None)</option>';
+            let optionsHtml = '<option value=""> (None)</option>';
             files.forEach((f, index) => {
                 optionsHtml += `<option value="${index}">${f.name}</option>`;
             });
@@ -881,7 +881,13 @@
              }
              
              // Append new info
-             const newEntry = `\n\n### ${fontName}\n\`\`\`\n${rawUrl}\n\`\`\``;
+             const newEntry = `
+
+### ${fontName}
+\`\`\`
+${rawUrl}
+\`\`\
+`;
              const newContent = currentContent + newEntry;
              
              // Encode content safely
@@ -926,8 +932,9 @@
              }
              
              // Safe regex for font name
-             const safeName = fontName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-             const regex = new RegExp(`\\n*### ${safeName}\\n+\`\`\`[\\s\\S]*?\`\`\``, 'g');
+             const safeName = fontName.replace(/[.*+?^${}()|[\\]/g, '\\$&');
+             const regex = new RegExp(`\n*### ${safeName}\n+\\\`[\\s\\S]*?\\\
+`, 'g');
              
              if (!regex.test(currentContent)) {
                  console.log('Font section not found in README');
@@ -1087,12 +1094,10 @@
                 // Actually GH content API returns alphabetical by default.
                 // We don't have true dates without extra API calls. 
                 // Fallback: Use 'az' as default for now, or just reverse for 'za'.
-                // Ideally we'd fetch commit history but that's expensive.
+                // Ideally we'd fetch commit history but that's expensive. 
                 // Let's rely on JSON content: 'newest' might just be default order if we assume appends?
-                // Actually, let's treat newest as A-Z for now or fix this later.
-                // WAIT: We can sort by name A-Z easily. 
-                // For Newest/Oldest, we don't have metadata. Let's stick to A-Z / Z-A for now.
-                // But the UI has Newest/Oldest.
+                // Actually, let's do A-Z sorting. 
+                // But the UI has Newest/Oldest. 
                 // Hack: We'll just ignore newest/oldest for now and map them to A-Z/Z-A or remove them.
                 // Better: Let's remove them from HTML or implement a basic shuffle. 
                 // Actually, let's just do A-Z sorting.
@@ -1113,6 +1118,23 @@
                 await createFontCard(font, container);
             }
             checkAuth();
+
+            // Intersection Observer for fade-in effect
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        obs.unobserve(entry.target); // Stop observing once it's in view
+                    }
+                });
+            }, {
+                rootMargin: '0px',
+                threshold: 0.1 // Trigger when 10% of the item is visible
+            });
+
+            document.querySelectorAll('.repo-card').forEach(card => {
+                observer.observe(card);
+            });
             
             // Re-apply search filter
             const searchTerm = searchInput.value.toLowerCase();
@@ -1133,7 +1155,7 @@
                 if (preferred) ttfUrl = fontData.main[preferred];
             }
 
-            const cssFontName = `custom-${fontData.name.replace(/[^a-zA-Z0-9]/g, '-')}-${Math.random().toString(36).substr(2, 9)}`;
+            const cssFontName = `custom-${fontData.name.replace(/[^a-zA-Z0-9]/g, '-')}-font`;
 
             if (ttfUrl) {
                 try {
