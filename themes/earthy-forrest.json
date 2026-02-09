@@ -1,0 +1,24 @@
+{
+    "name": "Earthy Forrest",
+    "description": "A Nice Refresh Of Life",
+    "authors": [
+        {
+            "name": "explysm",
+            "id": string
+        }
+    ],
+    "semanticColors": {
+        "ANDROID_NAVIGATION_SCRIM_BACKGROUND": [
+            "A3B18A"
+        ]
+    },
+    "rawColors": {
+        "raw_KEY_NAME": string
+    },
+    "background": {
+        "blur": number,
+        "url": string,
+        "alpha": number
+    },
+    "spec": 2
+}
