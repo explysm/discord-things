@@ -1,18 +1,30 @@
 {
-    "name": "Earthy Forrest",
-    "description": "A Nice Refresh Of Life",
-    "authors": [
-        {
-            "name": "explysm",
-            "id": "ii"
-        }
-    ],
-    "semanticColors": {
-        "ANDROID_NAVIGATION_SCRIM_BACKGROUND": [
-            "A3B18A"
-        ]
-    },
-    "rawColors": {
-    },
-    "spec": 2
+  "name": "Earthy Forrest",
+  "description": "A Refresh Of Life.",
+  "authors": [
+    {
+      "name": "explysm",
+      "id": "725075745671479296"
+    }
+  ],
+  "semanticColors": {
+    "BACKGROUND_TERTIARY": [
+      "#000000"
+  },
+  "rawColors": {
+  },
+  "background": {
+    "url": "https://raw.githubusercontent.com/wiwiichan/AMOLED-anime-theme/refs/heads/main/rem.jpg",
+    "blur": 0.5,
+    "alpha": 0.25,
+    "size": "cover",
+    "position": "center"
+  },
+  "plus": {
+    "version": "0",
+    "iconpack": "solar"
+  },
+  "spec": 2,
+  "createdAt": "2-09-2026",
+  "source": "local"
 }
