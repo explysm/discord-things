@@ -16,17 +16,13 @@
         ],
         "BACKGROUND_BASE_LOW": [
             "#6B705C"
+        ],
+        "BACKGROUND_BASE_LOWER": [
+            "#A5A58D"
         ]
     },
     "rawColors": {
         "BLACK_500": "#00000050"
-    },
-    "background": {
-        "url": "place_holder",
-        "blur": 0.5,
-        "alpha": 0.25,
-        "size": "cover",
-        "position": "center"
     },
     "spec": 2,
     "createdAt": "2025-10-05",
