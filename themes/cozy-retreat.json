@@ -1,35 +1,38 @@
 {
-  "name": "Cozy Retreat",
-  "description": "A Refresh Of Life.",
-  "authors": [
-    {
-      "name": "explysm",
-      "id": "752899252866515025"
-    }
-  ],
-  "semanticColors": {
-    "ANDROID_NAVIGATION_SCRIM_BACKGROUND": [
-      "#b7b7a4"
+    "name": "Cozy Retreat",
+    "description": "A Refresh Of Life.",
+    "authors": [
+        {
+            "name": "explysm",
+            "id": "752899252866515025"
+        }
     ],
-    "BACKGROUND_ACCENT": [
-      "#b7b7a4"
-    ]
-  },
-  "rawColors": {
-    "BLACK_500": "#00000050"
-  },
-  "background": {
-    "url": "place_holder",
-    "blur": 0.5,
-    "alpha": 0.25,
-    "size": "cover",
-    "position": "center"
-  },
-  "plus": {
-    "version": "0",
-    "iconpack": "solar"
-  },
-  "spec": 2,
-  "createdAt": "2025-10-05",
-  "source": "local"
+    "semanticColors": {
+        "ANDROID_NAVIGATION_SCRIM_BACKGROUND": [
+            "#b7b7a4"
+        ],
+        "BACKGROUND_ACCENT": [
+            "#b7b7a4"
+        ],
+        "BACKGROUND_BASE_LOW": [
+            "#6B705C"
+        ]
+    },
+    "rawColors": {
+        "BLACK_500": "#00000050"
+    },
+    "background": {
+        "url": "place_holder",
+        "blur": 0.5,
+        "alpha": 0.25,
+        "size": "cover",
+        "position": "center"
+    },
+    "plus": {
+        "version": "0",
+        "iconpack": "solar"
+    },
+    "spec": 2,
+    "createdAt": "2025-10-05",
+    "source": "local"
 }
