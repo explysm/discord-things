@@ -1,15 +1,15 @@
 {
-  "name": "AMOLED anime theme",
-  "description": "AMOLED Rem theme",
+  "name": "Cozy Retreat",
+  "description": "A Refresh Of Life.",
   "authors": [
     {
-      "name": "wiwiichan",
-      "id": "725075745671479296"
+      "name": "explysm",
+      "id": "752899252866515025"
     }
   ],
   "semanticColors": {
-    "BACKGROUND_TERTIARY": [
-      "#000000"
+    "ANDROID_NAVIGATION_SCRIM_BACKGROUND": [
+      "#b7b7a4"
     ]
   },
   "rawColors": {
