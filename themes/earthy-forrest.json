@@ -4,7 +4,7 @@
     "authors": [
         {
             "name": "explysm",
-            "id": string
+            "id": "ii"
         }
     ],
     "semanticColors": {
@@ -13,12 +13,6 @@
         ]
     },
     "rawColors": {
-        "raw_KEY_NAME": string
-    },
-    "background": {
-        "blur": number,
-        "url": string,
-        "alpha": number
     },
     "spec": 2
 }
