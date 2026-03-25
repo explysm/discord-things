@@ -1,0 +1,5 @@
+{
+  "name": "AutoNote",
+  "description": "Automatically adds a footer to @silent messages explaining why it's silent. Configurable in settings.",
+  "url": "https://explysm.github.io/plugins/autonote/"
+}
