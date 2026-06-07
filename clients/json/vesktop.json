@@ -1,0 +1,13 @@
+{
+  "name": "Vesktop",
+  "desc": "Standalone client for Vencord, optimized for Speed, reliability, and Linux support.",
+  "link": "https://vesktop.dev",
+  "iconUrl": "https://dl.flathub.org/media/dev/vencord/Vesktop/02c937b0a8029709d9131515cb0625b7/icons/128x128@2/dev.vencord.Vesktop.png",
+  "status": "actively-maintained",
+  "tags": [
+    "pc",
+    "linux",
+    "mac",
+    "windows"
+  ]
+}
