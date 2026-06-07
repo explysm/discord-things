@@ -1,0 +1,13 @@
+{
+  "name": "Vencord",
+  "desc": "Feature Rich Cross Platform Discord Mod",
+  "link": "https://vencord.dev",
+  "iconUrl": "https://vencord.dev/assets/logo.png",
+  "status": "actively-maintained",
+  "tags": [
+    "pc",
+    "linux",
+    "mac",
+    "windows"
+  ]
+}
