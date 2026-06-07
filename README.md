@@ -35,3 +35,9 @@ https://raw.githubusercontent.com/explysm/discord-things/main/fonts/minecraft-te
 ```
 https://raw.githubusercontent.com/explysm/discord-things/main/fonts/mojangles-seven.json
 ```
+
+
+### Cheeky Rabbit
+```
+https://raw.githubusercontent.com/explysm/discord-things/main/fonts/cheeky-rabbit.json
+``
